@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Course — Color Palette Selection</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  /* ── Global Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: #0a0a0f;
+    color: #ccc;
+    overflow-x: hidden;
+  }
+
+  /* ── Top Selector Bar ── */
+  .selector-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .selector-bar .title {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.5px; color: #888;
+    text-transform: uppercase;
+  }
+  .selector-bar .pills {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .pill {
+    padding: 8px 20px; border-radius: 100px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #999; transition: all 0.3s ease;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .pill .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .pill:hover { border-color: rgba(255,255,255,0.2); color: #ddd; }
+  .pill.active { color: #fff; border-color: transparent; }
+
+  /* ── Variant Sections ── */
+  .variant-section {
+    min-height: 100vh; position: relative;
+    padding: 100px 0 60px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .variant-label {
+    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; opacity: 0.5;
+    padding: 6px 18px; border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .variant-frame {
+    width: 92%; max-width: 1100px;
+    border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  /* ── Shared Home Layout ── */
+  .home-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px;
+  }
+  .home-nav .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 18px; font-weight: 700;
+  }
+  .home-nav .logo .icon-box {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .home-nav .nav-links {
+    display: flex; gap: 28px; align-items: center;
+  }
+  .home-nav .nav-links a {
+    font-size: 13px; font-weight: 500; text-decoration: none;
+    opacity: 0.6; transition: opacity 0.2s;
+  }
+  .home-nav .nav-links a:hover { opacity: 1; }
+  .home-nav .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; font-weight: 700;
+  }
+
+  .home-hero {
+    padding: 40px 32px 36px;
+    position: relative; overflow: hidden;
+  }
+  .home-hero .glow {
+    position: absolute; width: 300px; height: 300px;
+    border-radius: 50%; filter: blur(120px); opacity: 0.15;
+    top: -80px; right: -40px; pointer-events: none;
+  }
+  .home-hero .greeting {
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 10px; opacity: 0.5;
+  }
+  .home-hero h1 {
+    font-size: 32px; font-weight: 800; line-height: 1.2;
+    margin-bottom: 8px; position: relative;
+  }
+  .home-hero .subtitle {
+    font-size: 15px; opacity: 0.55; max-width: 500px; line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .stats-row {
+    display: flex; gap: 24px; padding: 0 32px 28px;
+  }
+  .stat-card {
+    flex: 1; padding: 18px 20px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+  }
+  .stat-card .stat-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1px; opacity: 0.4; margin-bottom: 6px;
+  }
+  .stat-card .stat-value {
+    font-size: 26px; font-weight: 800;
+  }
+  .stat-card .stat-sub {
+    font-size: 12px; opacity: 0.4; margin-top: 2px;
+  }
+
+  .modules-section {
+    padding: 0 32px 12px;
+  }
+  .modules-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .modules-header h2 {
+    font-size: 16px; font-weight: 700;
+  }
+  .modules-header .see-all {
+    font-size: 12px; font-weight: 600; text-decoration: none;
+    opacity: 0.5;
+  }
+
+  .modules-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    padding-bottom: 28px;
+  }
+  .module-card {
+    padding: 20px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    cursor: pointer; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .module-card:hover {
+    transform: translateY(-2px);
+  }
+  .module-card .mod-num {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; opacity: 0.35; margin-bottom: 10px;
+  }
+  .module-card .mod-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 6px;
+  }
+  .module-card .mod-desc {
+    font-size: 12px; opacity: 0.4; line-height: 1.5;
+  }
+  .module-card .mod-progress {
+    margin-top: 14px; height: 3px; border-radius: 4px;
+    background: rgba(255,255,255,0.06); overflow: hidden;
+  }
+  .module-card .mod-progress-fill {
+    height: 100%; border-radius: 4px;
+  }
+  .module-card .mod-tag {
+    display: inline-block; margin-top: 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 100px;
+  }
+
+  .code-preview {
+    margin: 0 32px 28px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+  .code-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .code-bar .filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; opacity: 0.4; margin-left: 8px;
+  }
+  .code-body {
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; line-height: 1.8;
+    background: rgba(0,0,0,0.15);
+  }
+  .code-body .kw { font-weight: 600; }
+  .code-body .fn { }
+  .code-body .str { }
+  .code-body .cmt { opacity: 0.35; font-style: italic; }
+  .code-body .num { }
+  .code-body .op { opacity: 0.6; }
+
+  .home-footer {
+    padding: 16px 32px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; opacity: 0.3;
+  }
+
+  /* ── Divider between variants ── */
+  .variant-divider {
+    width: 60px; height: 2px; border-radius: 2px;
+    margin: 40px auto 0; opacity: 0.15;
+  }
+
+  /* ── Scroll indicator ── */
+  .scroll-hint {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    opacity: 0.25; z-index: 999;
+    animation: pulseHint 2s ease-in-out infinite;
+  }
+  @keyframes pulseHint {
+    0%, 100% { opacity: 0.15; transform: translateX(-50%) translateY(0); }
+    50% { opacity: 0.35; transform: translateX(-50%) translateY(-4px); }
+  }
+
+  /* ── Variant 1: Serpent Green ── */
+  .v-green { background: #070d09; }
+  .v-green .home-nav { border-bottom: 1px solid rgba(52,211,153,0.08); }
+  .v-green .logo .icon-box { background: rgba(52,211,153,0.15); color: #34d399; }
+  .v-green .nav-links a { color: #a3c9b8; }
+  .v-green .avatar { border-color: #34d399; color: #34d399; background: rgba(52,211,153,0.1); }
+  .v-green .home-hero .glow { background: #34d399; }
+  .v-green .greeting { color: #34d399; }
+  .v-green h1 { color: #e8f5ef; }
+  .v-green .subtitle { color: #8aaa98; }
+  .v-green .stat-card { border-color: rgba(52,211,153,0.06); }
+  .v-green .stat-label { color: #34d399; }
+  .v-green .stat-value { color: #e8f5ef; }
+  .v-green .stat-sub { color: #6d9a84; }
+  .v-green .modules-header h2 { color: #d1ebe0; }
+  .v-green .modules-header .see-all { color: #34d399; }
+  .v-green .module-card { border-color: rgba(52,211,153,0.06); background: rgba(52,211,153,0.02); }
+  .v-green .module-card:hover { border-color: rgba(52,211,153,0.2); background: rgba(52,211,153,0.05); }
+  .v-green .mod-num { color: #34d399; }
+  .v-green .mod-title { color: #d8f0e4; }
+  .v-green .mod-desc { color: #6d9a84; }
+  .v-green .mod-progress { background: rgba(52,211,153,0.08); }
+  .v-green .mod-progress-fill { background: #34d399; }
+  .v-green .mod-tag { background: rgba(52,211,153,0.1); color: #34d399; }
+  .v-green .code-preview { border-color: rgba(52,211,153,0.06); }
+  .v-green .code-bar { background: rgba(0,0,0,0.4); }
+  .v-green .code-dot:nth-child(1) { background: #ef4444; }
+  .v-green .code-dot:nth-child(2) { background: #eab308; }
+  .v-green .code-dot:nth-child(3) { background: #22c55e; }
+  .v-green .code-body { color: #a3c9b8; background: rgba(0,0,0,0.25); }
+  .v-green .code-body .kw { color: #34d399; }
+  .v-green .code-body .fn { color: #6ee7b7; }
+  .v-green .code-body .str { color: #a7f3d0; }
+  .v-green .code-body .num { color: #fbbf24; }
+  .v-green .home-footer { color: #34d399; }
+  .v-green .variant-label { color: #34d399; border-color: rgba(52,211,153,0.2); }
+  .v-green .variant-frame { background: #0a1410; }
+
+  /* ── Variant 2: Molten Amber ── */
+  .v-amber { background: #0d0a06; }
+  .v-amber .home-nav { border-bottom: 1px solid rgba(251,191,36,0.08); }
+  .v-amber .logo .icon-box { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .v-amber .nav-links a { color: #c9b88a; }
+  .v-amber .avatar { border-color: #fbbf24; color: #fbbf24; background: rgba(251,191,36,0.1); }
+  .v-amber .home-hero .glow { background: #fbbf24; }
+  .v-amber .greeting { color: #fbbf24; }
+  .v-amber h1 { color: #f5efe3; }
+  .v-amber .subtitle { color: #aa9868; }
+  .v-amber .stat-card { border-color: rgba(251,191,36,0.06); }
+  .v-amber .stat-label { color: #fbbf24; }
+  .v-amber .stat-value { color: #f5efe3; }
+  .v-amber .stat-sub { color: #8a7a55; }
+  .v-amber .modules-header h2 { color: #ebe0c9; }
+  .v-amber .modules-header .see-all { color: #fbbf24; }
+  .v-amber .module-card { border-color: rgba(251,191,36,0.06); background: rgba(251,191,36,0.02); }
+  .v-amber .module-card:hover { border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.05); }
+  .v-amber .mod-num { color: #fbbf24; }
+  .v-amber .mod-title { color: #f0e6d0; }
+  .v-amber .mod-desc { color: #8a7a55; }
+  .v-amber .mod-progress { background: rgba(251,191,36,0.08); }
+  .v-amber .mod-progress-fill { background: #fbbf24; }
+  .v-amber .mod-tag { background: rgba(251,191,36,0.1); color: #fbbf24; }
+  .v-amber .code-preview { border-color: rgba(251,191,36,0.06); }
+  .v-amber .code-bar { background: rgba(0,0,0,0.4); }
+  .v-amber .code-dot:nth-child(1) { background: #ef4444; }
+  .v-amber .code-dot:nth-child(2) { background: #eab308; }
+  .v-amber .code-dot:nth-child(3) { background: #22c55e; }
+  .v-amber .code-body { color: #c9b88a; background: rgba(0,0,0,0.25); }
+  .v-amber .code-body .kw { color: #fbbf24; }
+  .v-amber .code-body .fn { color: #fde68a; }
+  .v-amber .code-body .str { color: #fcd34d; }
+  .v-amber .code-body .num { color: #fb923c; }
+  .v-amber .home-footer { color: #fbbf24; }
+  .v-amber .variant-label { color: #fbbf24; border-color: rgba(251,191,36,0.2); }
+  .v-amber .variant-frame { background: #14100a; }
+
+  /* ── Variant 3: Arctic Cyan ── */
+  .v-cyan { background: #060a0d; }
+  .v-cyan .home-nav { border-bottom: 1px solid rgba(34,211,238,0.08); }
+  .v-cyan .logo .icon-box { background: rgba(34,211,238,0.15); color: #22d3ee; }
+  .v-cyan .nav-links a { color: #8abfc9; }
+  .v-cyan .avatar { border-color: #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.1); }
+  .v-cyan .home-hero .glow { background: #22d3ee; }
+  .v-cyan .greeting { color: #22d3ee; }
+  .v-cyan h1 { color: #e3f2f5; }
+  .v-cyan .subtitle { color: #688a9a; }
+  .v-cyan .stat-card { border-color: rgba(34,211,238,0.06); }
+  .v-cyan .stat-label { color: #22d3ee; }
+  .v-cyan .stat-value { color: #e3f2f5; }
+  .v-cyan .stat-sub { color: #557a8a; }
+  .v-cyan .modules-header h2 { color: #c9e5eb; }
+  .v-cyan .modules-header .see-all { color: #22d3ee; }
+  .v-cyan .module-card { border-color: rgba(34,211,238,0.06); background: rgba(34,211,238,0.02); }
+  .v-cyan .module-card:hover { border-color: rgba(34,211,238,0.2); background: rgba(34,211,238,0.05); }
+  .v-cyan .mod-num { color: #22d3ee; }
+  .v-cyan .mod-title { color: #d0eef4; }
+  .v-cyan .mod-desc { color: #557a8a; }
+  .v-cyan .mod-progress { background: rgba(34,211,238,0.08); }
+  .v-cyan .mod-progress-fill { background: #22d3ee; }
+  .v-cyan .mod-tag { background: rgba(34,211,238,0.1); color: #22d3ee; }
+  .v-cyan .code-preview { border-color: rgba(34,211,238,0.06); }
+  .v-cyan .code-bar { background: rgba(0,0,0,0.4); }
+  .v-cyan .code-dot:nth-child(1) { background: #ef4444; }
+  .v-cyan .code-dot:nth-child(2) { background: #eab308; }
+  .v-cyan .code-dot:nth-child(3) { background: #22c55e; }
+  .v-cyan .code-body { color: #8abfc9; background: rgba(0,0,0,0.25); }
+  .v-cyan .code-body .kw { color: #22d3ee; }
+  .v-cyan .code-body .fn { color: #67e8f9; }
+  .v-cyan .code-body .str { color: #a5f3fc; }
+  .v-cyan .code-body .num { color: #fbbf24; }
+  .v-cyan .home-footer { color: #22d3ee; }
+  .v-cyan .variant-label { color: #22d3ee; border-color: rgba(34,211,238,0.2); }
+  .v-cyan .variant-frame { background: #0a1014; }
+
+  /* ── Variant 4: Crimson Edge ── */
+  .v-crimson { background: #0d0608; }
+  .v-crimson .home-nav { border-bottom: 1px solid rgba(244,63,94,0.08); }
+  .v-crimson .logo .icon-box { background: rgba(244,63,94,0.15); color: #f43f5e; }
+  .v-crimson .nav-links a { color: #c98a96; }
+  .v-crimson .avatar { border-color: #f43f5e; color: #f43f5e; background: rgba(244,63,94,0.1); }
+  .v-crimson .home-hero .glow { background: #f43f5e; }
+  .v-crimson .greeting { color: #f43f5e; }
+  .v-crimson h1 { color: #f5e3e8; }
+  .v-crimson .subtitle { color: #9a6878; }
+  .v-crimson .stat-card { border-color: rgba(244,63,94,0.06); }
+  .v-crimson .stat-label { color: #f43f5e; }
+  .v-crimson .stat-value { color: #f5e3e8; }
+  .v-crimson .stat-sub { color: #8a5568; }
+  .v-crimson .modules-header h2 { color: #ebc9d1; }
+  .v-crimson .modules-header .see-all { color: #f43f5e; }
+  .v-crimson .module-card { border-color: rgba(244,63,94,0.06); background: rgba(244,63,94,0.02); }
+  .v-crimson .module-card:hover { border-color: rgba(244,63,94,0.2); background: rgba(244,63,94,0.05); }
+  .v-crimson .mod-num { color: #f43f5e; }
+  .v-crimson .mod-title { color: #f4d0d8; }
+  .v-crimson .mod-desc { color: #8a5568; }
+  .v-crimson .mod-progress { background: rgba(244,63,94,0.08); }
+  .v-crimson .mod-progress-fill { background: #f43f5e; }
+  .v-crimson .mod-tag { background: rgba(244,63,94,0.1); color: #f43f5e; }
+  .v-crimson .code-preview { border-color: rgba(244,63,94,0.06); }
+  .v-crimson .code-bar { background: rgba(0,0,0,0.4); }
+  .v-crimson .code-dot:nth-child(1) { background: #ef4444; }
+  .v-crimson .code-dot:nth-child(2) { background: #eab308; }
+  .v-crimson .code-dot:nth-child(3) { background: #22c55e; }
+  .v-crimson .code-body { color: #c98a96; background: rgba(0,0,0,0.25); }
+  .v-crimson .code-body .kw { color: #f43f5e; }
+  .v-crimson .code-body .fn { color: #fb7185; }
+  .v-crimson .code-body .str { color: #fda4af; }
+  .v-crimson .code-body .num { color: #fbbf24; }
+  .v-crimson .home-footer { color: #f43f5e; }
+  .v-crimson .variant-label { color: #f43f5e; border-color: rgba(244,63,94,0.2); }
+  .v-crimson .variant-frame { background: #140a0e; }
+
+  /* ── Active pill styles per variant ── */
+  .pill[data-v="green"].active { background: rgba(52,211,153,0.15); border-color: #34d399; color: #34d399; }
+  .pill[data-v="amber"].active { background: rgba(251,191,36,0.15); border-color: #fbbf24; color: #fbbf24; }
+  .pill[data-v="cyan"].active { background: rgba(34,211,238,0.15); border-color: #22d3ee; color: #22d3ee; }
+  .pill[data-v="crimson"].active { background: rgba(244,63,94,0.15); border-color: #f43f5e; color: #f43f5e; }
+
+  .variant-divider.vd-green { background: #34d399; }
+  .variant-divider.vd-amber { background: #fbbf24; }
+  .variant-divider.vd-cyan { background: #22d3ee; }
+  .variant-divider.vd-crimson { background: #f43f5e; }
+
+  /* ── Selection badge ── */
+  .select-badge {
+    position: absolute; top: 20px; right: 20px; z-index: 10;
+    padding: 10px 24px; border-radius: 100px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all 0.3s ease; opacity: 0;
+    transform: translateY(-6px); pointer-events: none;
+    backdrop-filter: blur(10px);
+  }
+  .variant-frame:hover .select-badge {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+  }
+  .v-green .select-badge { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .v-amber .select-badge { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+  .v-cyan .select-badge { background: rgba(34,211,238,0.15); color: #22d3ee; border: 1px solid rgba(34,211,238,0.3); }
+  .v-crimson .select-badge { background: rgba(244,63,94,0.15); color: #f43f5e; border: 1px solid rgba(244,63,94,0.3); }
+  .select-badge:hover { transform: scale(1.05) !important; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(20px);
+    padding: 12px 28px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; opacity: 0; pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+    z-index: 2000;
+  }
+  .toast.show {
+    opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto;
+  }
+
+  @media (max-width: 768px) {
+    .modules-grid { grid-template-columns: 1fr; }
+    .stats-row { flex-direction: column; gap: 10px; }
+    .home-hero h1 { font-size: 24px; }
+    .selector-bar { padding: 10px 16px; flex-direction: column; gap: 10px; }
+    .variant-frame { width: 96%; border-radius: 14px; }
+    .home-nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Fixed Selector Bar -->
+<div class="selector-bar">
+  <div class="title">Choose Your Palette</div>
+  <div class="pills">
+    <a href="#green" class="pill active" data-v="green">
+      <span class="dot" style="background:#34d399"></span> Serpent Green
+    </a>
+    <a href="#amber" class="pill" data-v="amber">
+      <span class="dot" style="background:#fbbf24"></span> Molten Amber
+    </a>
+    <a href="#cyan" class="pill" data-v="cyan">
+      <span class="dot" style="background:#22d3ee"></span> Arctic Cyan
+    </a>
+    <a href="#crimson" class="pill" data-v="crimson">
+      <span class="dot" style="background:#f43f5e"></span> Crimson Edge
+    </a>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scroll hint -->
+<div class="scroll-hint" id="scrollHint"><i class="fas fa-chevron-down"></i>&ensp;Scroll to compare</div>
+
+<!-- ════════════════ VARIANT 1: SERPENT GREEN ════════════════ -->
+<section class="variant-section v-green" id="green">
+  <div class="variant-label">Variant A</div>
+  <div class="variant-frame">
+    <div class="select-badge" onclick="pickPalette('Serpent Green')"><i class="fas fa-check"></i>&ensp;Select This</div>
+
+    <nav class="home-nav">
+      <div class="logo">
+        <div class="icon-box"><i class="fab fa-python"></i></div>
+        Pythoneer
+      </div>
+      <div class="nav-links">
+        <a href="#">Lessons</a>
+        <a href="#">Playground</a>
+        <a href="#">Frameworks</a>
+        <a href="#">Community</a>
+        <div class="avatar">JD</div>
+      </div>
+    </nav>
+
+    <div class="home-hero">
+      <div class="glow"></div>
+      <div class="greeting">Welcome back, Jordan</div>
+      <h1>Master Python,<br>From Zero to Production</h1>
+      <div class="subtitle">You're 37% through the course. Pick up where you left off — or explore a new module.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Lessons Done</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub">of 128 total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Code Run</div>
+        <div class="stat-value">312</div>
+        <div class="stat-sub">snippets executed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value">12d</div>
+        <div class="stat-sub">personal best: 21d</div>
+      </div>
+    </div>
+
+    <div class="modules-section">
+      <div class="modules-header">
+        <h2>Continue Learning</h2>
+        <a href="#" class="see-all">View All Modules &rarr;</a>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="mod-num">Module 05</div>
+          <div class="mod-title">Functions & Scope</div>
+          <div class="mod-desc">Args, kwargs, closures, decorators, and the LEGB rule</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:65%"></div></div>
+          <span class="mod-tag">In Progress</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 06</div>
+          <div class="mod-title">OOP Deep Dive</div>
+          <div class="mod-desc">Classes, inheritance, magic methods, dataclasses, and protocols</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:10%"></div></div>
+          <span class="mod-tag">Started</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 07</div>
+          <div class="mod-title">File I/O & Exceptions</div>
+          <div class="mod-desc">Context managers, custom exceptions, pathlib, and serialization</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:0%"></div></div>
+          <span class="mod-tag">Locked</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-bar">
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="filename">lesson_05_decorators.py</span>
+      </div>
+      <div class="code-body">
+        <span class="kw">def</span> <span class="fn">timer</span>(func):<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;start <span class="op">=</span> <span class="fn">time</span>.<span class="fn">perf_counter</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;result <span class="op">=</span> <span class="fn">func</span>(*args, **kwargs)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"Ran in </span>{<span class="fn">time</span>.<span class="fn">perf_counter</span>() <span class="op">-</span> start:<span class="num">.4f</span><span class="str">s"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+        &nbsp;&nbsp;<span class="kw">return</span> wrapper
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <span>Pythoneer v1.0</span>
+      <span>Built for learners who ship code</span>
+    </div>
+  </div>
+  <div class="variant-divider vd-green"></div>
+</section>
+
+<!-- ════════════════ VARIANT 2: MOLTEN AMBER ════════════════ -->
+<section class="variant-section v-amber" id="amber">
+  <div class="variant-label">Variant B</div>
+  <div class="variant-frame">
+    <div class="select-badge" onclick="pickPalette('Molten Amber')"><i class="fas fa-check"></i>&ensp;Select This</div>
+
+    <nav class="home-nav">
+      <div class="logo">
+        <div class="icon-box"><i class="fab fa-python"></i></div>
+        Pythoneer
+      </div>
+      <div class="nav-links">
+        <a href="#">Lessons</a>
+        <a href="#">Playground</a>
+        <a href="#">Frameworks</a>
+        <a href="#">Community</a>
+        <div class="avatar">JD</div>
+      </div>
+    </nav>
+
+    <div class="home-hero">
+      <div class="glow"></div>
+      <div class="greeting">Welcome back, Jordan</div>
+      <h1>Master Python,<br>From Zero to Production</h1>
+      <div class="subtitle">You're 37% through the course. Pick up where you left off — or explore a new module.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Lessons Done</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub">of 128 total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Code Run</div>
+        <div class="stat-value">312</div>
+        <div class="stat-sub">snippets executed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value">12d</div>
+        <div class="stat-sub">personal best: 21d</div>
+      </div>
+    </div>
+
+    <div class="modules-section">
+      <div class="modules-header">
+        <h2>Continue Learning</h2>
+        <a href="#" class="see-all">View All Modules &rarr;</a>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="mod-num">Module 05</div>
+          <div class="mod-title">Functions & Scope</div>
+          <div class="mod-desc">Args, kwargs, closures, decorators, and the LEGB rule</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:65%"></div></div>
+          <span class="mod-tag">In Progress</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 06</div>
+          <div class="mod-title">OOP Deep Dive</div>
+          <div class="mod-desc">Classes, inheritance, magic methods, dataclasses, and protocols</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:10%"></div></div>
+          <span class="mod-tag">Started</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 07</div>
+          <div class="mod-title">File I/O & Exceptions</div>
+          <div class="mod-desc">Context managers, custom exceptions, pathlib, and serialization</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:0%"></div></div>
+          <span class="mod-tag">Locked</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-bar">
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="filename">lesson_05_decorators.py</span>
+      </div>
+      <div class="code-body">
+        <span class="kw">def</span> <span class="fn">timer</span>(func):<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;start <span class="op">=</span> <span class="fn">time</span>.<span class="fn">perf_counter</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;result <span class="op">=</span> <span class="fn">func</span>(*args, **kwargs)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"Ran in </span>{<span class="fn">time</span>.<span class="fn">perf_counter</span>() <span class="op">-</span> start:<span class="num">.4f</span><span class="str">s"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+        &nbsp;&nbsp;<span class="kw">return</span> wrapper
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <span>Pythoneer v1.0</span>
+      <span>Built for learners who ship code</span>
+    </div>
+  </div>
+  <div class="variant-divider vd-amber"></div>
+</section>
+
+<!-- ════════════════ VARIANT 3: ARCTIC CYAN ════════════════ -->
+<section class="variant-section v-cyan" id="cyan">
+  <div class="variant-label">Variant C</div>
+  <div class="variant-frame">
+    <div class="select-badge" onclick="pickPalette('Arctic Cyan')"><i class="fas fa-check"></i>&ensp;Select This</div>
+
+    <nav class="home-nav">
+      <div class="logo">
+        <div class="icon-box"><i class="fab fa-python"></i></div>
+        Pythoneer
+      </div>
+      <div class="nav-links">
+        <a href="#">Lessons</a>
+        <a href="#">Playground</a>
+        <a href="#">Frameworks</a>
+        <a href="#">Community</a>
+        <div class="avatar">JD</div>
+      </div>
+    </nav>
+
+    <div class="home-hero">
+      <div class="glow"></div>
+      <div class="greeting">Welcome back, Jordan</div>
+      <h1>Master Python,<br>From Zero to Production</h1>
+      <div class="subtitle">You're 37% through the course. Pick up where you left off — or explore a new module.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Lessons Done</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub">of 128 total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Code Run</div>
+        <div class="stat-value">312</div>
+        <div class="stat-sub">snippets executed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value">12d</div>
+        <div class="stat-sub">personal best: 21d</div>
+      </div>
+    </div>
+
+    <div class="modules-section">
+      <div class="modules-header">
+        <h2>Continue Learning</h2>
+        <a href="#" class="see-all">View All Modules &rarr;</a>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="mod-num">Module 05</div>
+          <div class="mod-title">Functions & Scope</div>
+          <div class="mod-desc">Args, kwargs, closures, decorators, and the LEGB rule</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:65%"></div></div>
+          <span class="mod-tag">In Progress</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 06</div>
+          <div class="mod-title">OOP Deep Dive</div>
+          <div class="mod-desc">Classes, inheritance, magic methods, dataclasses, and protocols</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:10%"></div></div>
+          <span class="mod-tag">Started</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 07</div>
+          <div class="mod-title">File I/O & Exceptions</div>
+          <div class="mod-desc">Context managers, custom exceptions, pathlib, and serialization</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:0%"></div></div>
+          <span class="mod-tag">Locked</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-bar">
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="filename">lesson_05_decorators.py</span>
+      </div>
+      <div class="code-body">
+        <span class="kw">def</span> <span class="fn">timer</span>(func):<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;start <span class="op">=</span> <span class="fn">time</span>.<span class="fn">perf_counter</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;result <span class="op">=</span> <span class="fn">func</span>(*args, **kwargs)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"Ran in </span>{<span class="fn">time</span>.<span class="fn">perf_counter</span>() <span class="op">-</span> start:<span class="num">.4f</span><span class="str">s"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+        &nbsp;&nbsp;<span class="kw">return</span> wrapper
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <span>Pythoneer v1.0</span>
+      <span>Built for learners who ship code</span>
+    </div>
+  </div>
+  <div class="variant-divider vd-cyan"></div>
+</section>
+
+<!-- ════════════════ VARIANT 4: CRIMSON EDGE ════════════════ -->
+<section class="variant-section v-crimson" id="crimson">
+  <div class="variant-label">Variant D</div>
+  <div class="variant-frame">
+    <div class="select-badge" onclick="pickPalette('Crimson Edge')"><i class="fas fa-check"></i>&ensp;Select This</div>
+
+    <nav class="home-nav">
+      <div class="logo">
+        <div class="icon-box"><i class="fab fa-python"></i></div>
+        Pythoneer
+      </div>
+      <div class="nav-links">
+        <a href="#">Lessons</a>
+        <a href="#">Playground</a>
+        <a href="#">Frameworks</a>
+        <a href="#">Community</a>
+        <div class="avatar">JD</div>
+      </div>
+    </nav>
+
+    <div class="home-hero">
+      <div class="glow"></div>
+      <div class="greeting">Welcome back, Jordan</div>
+      <h1>Master Python,<br>From Zero to Production</h1>
+      <div class="subtitle">You're 37% through the course. Pick up where you left off — or explore a new module.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Lessons Done</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub">of 128 total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Code Run</div>
+        <div class="stat-value">312</div>
+        <div class="stat-sub">snippets executed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value">12d</div>
+        <div class="stat-sub">personal best: 21d</div>
+      </div>
+    </div>
+
+    <div class="modules-section">
+      <div class="modules-header">
+        <h2>Continue Learning</h2>
+        <a href="#" class="see-all">View All Modules &rarr;</a>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="mod-num">Module 05</div>
+          <div class="mod-title">Functions & Scope</div>
+          <div class="mod-desc">Args, kwargs, closures, decorators, and the LEGB rule</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:65%"></div></div>
+          <span class="mod-tag">In Progress</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 06</div>
+          <div class="mod-title">OOP Deep Dive</div>
+          <div class="mod-desc">Classes, inheritance, magic methods, dataclasses, and protocols</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:10%"></div></div>
+          <span class="mod-tag">Started</span>
+        </div>
+        <div class="module-card">
+          <div class="mod-num">Module 07</div>
+          <div class="mod-title">File I/O & Exceptions</div>
+          <div class="mod-desc">Context managers, custom exceptions, pathlib, and serialization</div>
+          <div class="mod-progress"><div class="mod-progress-fill" style="width:0%"></div></div>
+          <span class="mod-tag">Locked</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-bar">
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="code-dot"></span>
+        <span class="filename">lesson_05_decorators.py</span>
+      </div>
+      <div class="code-body">
+        <span class="kw">def</span> <span class="fn">timer</span>(func):<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;start <span class="op">=</span> <span class="fn">time</span>.<span class="fn">perf_counter</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;result <span class="op">=</span> <span class="fn">func</span>(*args, **kwargs)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"Ran in </span>{<span class="fn">time</span>.<span class="fn">perf_counter</span>() <span class="op">-</span> start:<span class="num">.4f</span><span class="str">s"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+        &nbsp;&nbsp;<span class="kw">return</span> wrapper
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <span>Pythoneer v1.0</span>
+      <span>Built for learners who ship code</span>
+    </div>
+  </div>
+  <div class="variant-divider vd-crimson"></div>
+</section>
+
+<script>
+  /* ── Pill active state on scroll ── */
+  const sections = document.querySelectorAll('.variant-section');
+  const pills = document.querySelectorAll('.pill');
+  const scrollHint = document.getElementById('scrollHint');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        pills.forEach(p => p.classList.remove('active'));
+        const active = document.querySelector(`.pill[data-v="${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.45 });
+
+  sections.forEach(s => observer.observe(s));
+
+  /* Hide scroll hint after first scroll */
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 200) {
+      scrollHint.style.opacity = '0';
+      scrollHint.style.transition = 'opacity 0.5s';
+    }
+  }, { once: false });
+
+  /* ── Toast ── */
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  /* ── Pick palette ── */
+  function pickPalette(name) {
+    showToast(`${name} selected — building the full course with this palette`);
+  }
+</script>
+</body>
+</html>

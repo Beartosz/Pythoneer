@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="green">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pythoneer — Learn Python, From Zero to Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- CodeMirror (editor) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<link rel="stylesheet" href="css/app.css?v=4">
+</head>
+<body>
+
+<div class="boot" id="boot">
+  <div class="spin"></div>
+  <div class="boot-text">Starting Pythoneer…</div>
+</div>
+
+<div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="icon-box"><i class="fab fa-python"></i></div>
+      Pythoneer
+    </div>
+
+    <a class="nav-item" data-route="#/" href="#/"><i class="fas fa-house"></i> Home</a>
+    <a class="nav-item" data-route="#/lessons" href="#/lessons"><i class="fas fa-graduation-cap"></i> Lessons</a>
+    <a class="nav-item" data-route="#/playground" href="#/playground"><i class="fas fa-terminal"></i> Playground</a>
+    <a class="nav-item" data-route="#/frameworks" href="#/frameworks"><i class="fas fa-layer-group"></i> Frameworks</a>
+    <a class="nav-item" data-route="#/projects" href="#/projects"><i class="fas fa-cubes-stacked"></i> Projects</a>
+
+    <div class="nav-group-label">You</div>
+    <a class="nav-item" data-route="#/users" href="#/users" id="navUsers" style="display:none"><i class="fas fa-users-gear"></i> Users</a>
+    <a class="nav-item" data-route="#/settings" href="#/settings"><i class="fas fa-sliders"></i> Settings</a>
+
+    <div class="spacer"></div>
+    <div class="sidebar-account" id="sidebarAccount" style="display:none">
+      <div class="sa-user">
+        <span class="sa-avatar" id="saAvatar"></span>
+        <span class="sa-name" id="saName"></span>
+      </div>
+      <button class="sa-logout" id="logoutNav" title="Log out">
+        <i class="fas fa-arrow-right-from-bracket"></i> Log out
+      </button>
+    </div>
+    <div class="sidebar-foot">
+      <span class="server-dot" id="serverDot"></span><span id="serverStatus">checking engine…</span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="view"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="js/curriculum.js?v=4"></script>
+<script src="js/store.js?v=4"></script>
+<script src="js/theme.js?v=4"></script>
+<!-- Supabase (required sign-in + cloud progress sync; see js/auth.js) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/auth.js?v=4"></script>
+<script src="js/runner.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
+</body>
+</html>
