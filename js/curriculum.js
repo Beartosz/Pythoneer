@@ -445,6 +445,178 @@ print(f"Each person pays {per_person:.2f}")`,
           ],
         },
         {
+          id: "m02-l09", kind: "lesson", title: "The string toolkit, part 2",
+          docs: [{ label: "String methods", url: "https://docs.python.org/3/library/stdtypes.html#string-methods" }],
+          content: `
+<div class="lc-eyebrow">Lesson 9 · Numbers, Strings & Input</div>
+<h1>Trimming and searching strings</h1>
+<p>Real-world text is messy — extra spaces, inconsistent capitalisation, stray
+punctuation. Python's strings come with methods that clean and inspect text for
+you. Remember: strings are <b>immutable</b>, so these methods <i>return a new
+string</i> rather than changing the original.</p>
+<h2>Trimming whitespace</h2>
+<p><code>strip()</code> removes whitespace from both ends; <code>lstrip()</code>
+and <code>rstrip()</code> trim only the left or right. Pass characters to strip
+those instead of spaces.</p>
+<pre><code>raw = "   hello   "
+print(raw.strip())          # "hello"
+print("...done...".strip(".")) # "done"</code></pre>
+<h2>Asking yes/no questions</h2>
+<p><code>startswith()</code> and <code>endswith()</code> return a boolean:</p>
+<pre><code>name = "report_2024.csv"
+print(name.endswith(".csv"))    # True
+print(name.startswith("report")) # True</code></pre>
+<h2>Finding things</h2>
+<p><code>find()</code> returns the index of the first match, or <code>-1</code> if
+it's not there. <code>index()</code> does the same but <b>raises an error</b> on a
+miss. <code>count()</code> tells you how many times a piece appears.</p>
+<pre><code>s = "banana"
+print(s.find("na"))    # 2
+print(s.find("z"))     # -1  (no error)
+print(s.count("a"))    # 3</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+Use <code>find()</code> when a miss is normal and you'll check for
+<code>-1</code>; use <code>index()</code> when a miss is a real bug you want to
+hear about.</div></div>`,
+          starter: `raw = "   Ada Lovelace   "
+print(raw.strip())
+print(raw.strip().startswith("Ada"))
+
+s = "mississippi"
+print("s appears", s.count("s"), "times")
+print("first 'ss' at index", s.find("ss"))`,
+        },
+        {
+          id: "m02-l10", kind: "exercise", title: "Exercise: Clean the CSV field",
+          docs: [{ label: "str.strip()", url: "https://docs.python.org/3/library/stdtypes.html#str.strip" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
+<h1>Tidy a messy field</h1>
+<p>A value pulled from a spreadsheet arrived wrapped in spaces and quotation
+marks. Clean it up.</p>
+<h3>Your task</h3>
+<ul>
+  <li>Start from <code>raw</code> and produce <code>cleaned</code> with no
+      surrounding whitespace and no double-quote characters.</li>
+  <li>With the starter value, <code>cleaned</code> should be
+      <code>Ada Lovelace</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>strip()</code> handles the spaces; <code>replace('"', '')</code> removes the
+quotes. Order doesn't matter here.</div></div>`,
+          starter: `raw = '   "Ada Lovelace"   '
+
+cleaned = raw    # strip the spaces and remove the quote characters
+
+print(f"[{cleaned}]")`,
+          tests: [
+            { name: "cleaned is exactly 'Ada Lovelace'", code: `assert cleaned == "Ada Lovelace", f"Expected 'Ada Lovelace', got {cleaned!r}"` },
+            { name: "no surrounding whitespace remains", code: `assert cleaned == cleaned.strip(), "cleaned still has leading/trailing whitespace"` },
+            { name: "no quote characters remain", code: `assert '"' not in cleaned, "Remove the double-quote characters"` },
+          ],
+        },
+        {
+          id: "m02-l11", kind: "lesson", title: "Padding & aligning text",
+          docs: [
+            { label: "str.zfill()", url: "https://docs.python.org/3/library/stdtypes.html#str.zfill" },
+            { label: "Format spec mini-language", url: "https://docs.python.org/3/library/string.html#format-specification-mini-language" },
+          ],
+          content: `
+<div class="lc-eyebrow">Lesson 10 · Numbers, Strings & Input</div>
+<h1>Lining things up</h1>
+<p>Reports, receipts, and tables look professional when columns line up. Python
+gives you two ways to pad text to a fixed width.</p>
+<h2>Zero-padding numbers</h2>
+<p><code>zfill(n)</code> pads a string on the left with zeros until it's
+<code>n</code> characters long — perfect for IDs and timestamps.</p>
+<pre><code>print(str(42).zfill(5))   # "00042"
+print("7".zfill(3))        # "007"</code></pre>
+<h2>Aligning with methods</h2>
+<p><code>ljust</code>, <code>rjust</code>, and <code>center</code> pad with spaces
+(or a fill character you choose) to a width.</p>
+<pre><code>print("Name".ljust(10) + "|")   # "Name      |"
+print("42".rjust(6))             # "    42"
+print("title".center(11, "-"))   # "---title---"</code></pre>
+<h2>The same, inside f-strings</h2>
+<p>Format specs <code>&lt;</code>, <code>&gt;</code>, and <code>^</code> do left,
+right, and centre alignment:</p>
+<pre><code>print(f"{'Widget':&gt;12}")   # right-aligned in 12 columns
+print(f"{42:05d}")           # "00042"</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Inside f-strings the width can be a variable too:
+<code>f"{name:&gt;{w}}"</code> right-aligns to width <code>w</code>.</div></div>`,
+          starter: `for n in [1, 42, 999]:
+    print("ID-" + str(n).zfill(4))
+
+print(f"{'Total':<10}{'$42.00':>8}")`,
+        },
+        {
+          id: "m02-l12", kind: "exercise", title: "Exercise: Format an invoice ID",
+          docs: [{ label: "str.zfill()", url: "https://docs.python.org/3/library/stdtypes.html#str.zfill" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
+<h1>Build a tidy invoice line</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Make <code>invoice_id</code> by joining <code>"INV-"</code> with
+      <code>seq</code> zero-padded to <b>5</b> digits — so <code>42</code> becomes
+      <code>INV-00042</code>.</li>
+  <li>Build <code>line</code> as the product <code>name</code> right-aligned to a
+      width of <b>12</b>, then <code>": "</code>, then the invoice id, and
+      <code>print</code> it.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>str(seq).zfill(5)</code> for the number; <code>f"{name:&gt;12}"</code> for the
+alignment.</div></div>`,
+          starter: `seq = 42
+name = "Widget"
+
+invoice_id = ""     # "INV-" + zero-padded seq
+line = ""           # f"{name:>12}: {invoice_id}"
+
+print(line)`,
+          tests: [
+            { name: "invoice_id is 'INV-00042'", code: `assert invoice_id == "INV-00042", f"Expected 'INV-00042', got {invoice_id!r}"` },
+            { name: "line is right-aligned to width 12", code: `assert line == f"{'Widget':>12}: INV-00042", f"Got {line!r}"` },
+            { name: "you printed the line", code: `assert line in __stdout__ and line.strip(), "Print the assembled line"` },
+          ],
+        },
+        {
+          id: "m02-l13", kind: "exercise", title: "Exercise: Shout the vowels",
+          docs: [
+            { label: "str.maketrans()", url: "https://docs.python.org/3/library/stdtypes.html#str.maketrans" },
+            { label: "str.translate()", url: "https://docs.python.org/3/library/stdtypes.html#str.translate" },
+          ],
+          content: `
+<div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
+<h1>Upper-case every vowel</h1>
+<p><code>str.maketrans</code> builds a translation table mapping characters to
+their replacements, and <code>str.translate</code> applies it in one pass.</p>
+<h3>Your task</h3>
+<ul>
+  <li>Build a table that maps each lower-case vowel
+      (<code>a e i o u</code>) to its upper-case form.</li>
+  <li>Apply it to <code>text</code> and store the result in
+      <code>shouted</code>.</li>
+  <li>With the starter value, <code>shouted</code> is
+      <code>encyclopedia</code> → <code>EncyclOpEdIA</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>str.maketrans("aeiou", "AEIOU")</code> pairs the two strings character by
+character.</div></div>`,
+          starter: `text = "encyclopedia"
+
+table = {}      # str.maketrans("aeiou", "AEIOU")
+shouted = text  # text.translate(table)
+
+print(shouted)`,
+          tests: [
+            { name: "shouted matches translate()", code: `assert shouted == text.translate(str.maketrans("aeiou", "AEIOU")), "Map each lower vowel to upper-case"` },
+            { name: "length is unchanged", code: `assert len(shouted) == len(text), "translate() replaces 1-for-1; length should not change"` },
+            { name: "no lower-case vowels remain", code: `assert not any(c in shouted for c in "aeiou"), "Every lower vowel should be upper-cased"` },
+          ],
+        },
+        {
           id: "m02-quiz", kind: "quiz", title: "Module 2 Check: Numbers & Strings",
           intro: "Test your grip on arithmetic, formatting, strings, and input.",
           questions: [
@@ -958,6 +1130,244 @@ print(low_stock)`,
           tests: [
             { name: "finds the low-stock products in order", code: `assert low_stock == ["bread", "milk", "rice"], f"Expected ['bread', 'milk', 'rice'], got {low_stock}"` },
             { name: "low_stock is a list", code: `assert isinstance(low_stock, list), "low_stock should be a list"` },
+          ],
+        },
+        {
+          id: "m04-l08", kind: "lesson", title: "List methods in depth",
+          docs: [{ label: "Mutable sequence methods", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
+          content: `
+<div class="lc-eyebrow">Lesson 8 · Collections</div>
+<h1>Editing lists in place</h1>
+<p>You already know <code>append</code>. Lists have a whole toolkit for changing
+their contents. A key distinction: most of these methods <b>change the list in
+place and return <code>None</code></b> — they don't hand you a new list.</p>
+<h2>Adding</h2>
+<pre><code>nums = [1, 2, 3]
+nums.append(4)          # [1, 2, 3, 4]   — one item
+nums.extend([5, 6])     # [1, 2, 3, 4, 5, 6] — many items
+nums.insert(0, 0)       # [0, 1, 2, 3, 4, 5, 6] — at an index</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>append([5, 6])</code> would add the <i>list</i> as a single element.
+<code>extend</code> adds each item separately.</div></div>
+<h2>Removing</h2>
+<pre><code>nums.remove(3)   # deletes the first 3 by value
+last = nums.pop()   # removes & RETURNS the last item
+first = nums.pop(0) # pop by index too</code></pre>
+<h2>Inspecting & copying</h2>
+<pre><code>letters = ["a", "b", "a", "c"]
+print(letters.index("b"))  # 1  (first position; raises if absent)
+print(letters.count("a"))  # 2
+backup = letters.copy()    # an independent shallow copy</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>pop</code> is special: it both removes <i>and</i> returns. The others return
+<code>None</code>, so never write <code>nums = nums.append(4)</code>.</div></div>`,
+          starter: `queue = ["alice", "bob"]
+queue.append("carol")
+queue.insert(0, "vip")
+served = queue.pop(0)
+
+print("now serving:", served)
+print("waiting:", queue)`,
+        },
+        {
+          id: "m04-l09", kind: "exercise", title: "Exercise: Playlist editor",
+          docs: [{ label: "list.pop()", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Collections</div>
+<h1>Edit a playlist</h1>
+<p>Apply this exact sequence of edits to <code>playlist</code>:</p>
+<h3>Your task</h3>
+<ol>
+  <li><code>append</code> <code>"Outro"</code> to the end.</li>
+  <li><code>insert</code> <code>"Chorus"</code> at index <code>2</code>.</li>
+  <li><code>remove</code> the track <code>"Bridge"</code>.</li>
+  <li><code>pop</code> the last track and store it in <code>encore</code>.</li>
+</ol>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Remember <code>pop()</code> with no argument removes <i>and returns</i> the last
+item.</div></div>`,
+          starter: `playlist = ["Intro", "Verse", "Bridge"]
+
+# 1) append "Outro"
+# 2) insert "Chorus" at index 2
+# 3) remove "Bridge"
+# 4) encore = pop the last track
+encore = ""
+
+print(playlist)
+print("encore:", encore)`,
+          tests: [
+            { name: "playlist ends as the right three tracks", code: `assert playlist == ["Intro", "Verse", "Chorus"], f"Got {playlist}"` },
+            { name: "encore is 'Outro'", code: `assert encore == "Outro", f"Expected 'Outro', got {encore!r}"` },
+            { name: "'Chorus' landed at index 2", code: `assert playlist.index("Chorus") == 2, "Chorus should be at index 2"` },
+          ],
+        },
+        {
+          id: "m04-l10", kind: "lesson", title: "Sorting with keys",
+          docs: [
+            { label: "sorted()", url: "https://docs.python.org/3/library/functions.html#sorted" },
+            { label: "list.sort()", url: "https://docs.python.org/3/library/stdtypes.html#list.sort" },
+          ],
+          content: `
+<div class="lc-eyebrow">Lesson 9 · Collections</div>
+<h1>Sorting your way</h1>
+<p>Two tools, one idea. <code>list.sort()</code> sorts a list <b>in place</b>
+(returns <code>None</code>); <code>sorted(iterable)</code> returns a <b>new</b>
+sorted list and works on anything iterable.</p>
+<pre><code>nums = [3, 1, 2]
+nums.sort()                 # nums is now [1, 2, 3]
+print(sorted([3, 1, 2]))    # [1, 2, 3], original untouched</code></pre>
+<h2>The <code>key</code> argument</h2>
+<p><code>key</code> takes a function applied to each item to decide the sort
+order. Pair it with <code>reverse=True</code> for descending.</p>
+<pre><code>words = ["pear", "fig", "apple"]
+print(sorted(words, key=len))            # ['fig', 'pear', 'apple']
+print(sorted(words, key=len, reverse=True))  # ['apple', 'pear', 'fig']</code></pre>
+<h2>Sorting by more than one thing</h2>
+<p>Return a <b>tuple</b> from <code>key</code> to sort by several fields. Sorting
+is <i>stable</i>, so ties keep their original order.</p>
+<pre><code>people = [("Ada", 90), ("Bo", 90), ("Cy", 75)]
+# highest score first, then name A→Z:
+print(sorted(people, key=lambda p: (-p[1], p[0])))</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Negating a number (<code>-p[1]</code>) flips just that field to descending while
+the rest stay ascending.</div></div>`,
+          starter: `scores = [("Ada", 90), ("Cy", 75), ("Bo", 90)]
+ranked = sorted(scores, key=lambda p: (-p[1], p[0]))
+for name, pts in ranked:
+    print(f"{name}: {pts}")`,
+        },
+        {
+          id: "m04-l11", kind: "exercise", title: "Exercise: Leaderboard by score then name",
+          docs: [{ label: "sorted(key=...)", url: "https://docs.python.org/3/library/functions.html#sorted" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Collections</div>
+<h1>Rank the players</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>players</code> is a list of dicts with <code>name</code> and
+      <code>score</code>.</li>
+  <li>Build <code>ordered</code>: sorted by <b>score descending</b>, and for equal
+      scores by <b>name A→Z</b>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+A tuple key does both at once:
+<code>key=lambda p: (-p["score"], p["name"])</code>.</div></div>`,
+          starter: `players = [
+    {"name": "Cy", "score": 75},
+    {"name": "Bo", "score": 90},
+    {"name": "Ada", "score": 90},
+]
+
+ordered = players    # sort by score desc, then name asc
+
+for p in ordered:
+    print(p["name"], p["score"])`,
+          tests: [
+            { name: "ordered matches the reference sort", code: `assert ordered == sorted(players, key=lambda p: (-p["score"], p["name"])), "Sort by score desc, then name asc"` },
+            { name: "the top player is Ada", code: `assert ordered[0]["name"] == "Ada", "Ada and Bo tie at 90; Ada comes first by name"` },
+            { name: "the names are in the right order", code: `assert [p["name"] for p in ordered] == ["Ada", "Bo", "Cy"], f"Got {[p['name'] for p in ordered]}"` },
+          ],
+        },
+        {
+          id: "m04-l12", kind: "lesson", title: "Dictionary methods",
+          docs: [{ label: "dict methods", url: "https://docs.python.org/3/library/stdtypes.html#dict" }],
+          content: `
+<div class="lc-eyebrow">Lesson 10 · Collections</div>
+<h1>Working with dictionaries</h1>
+<p>Beyond <code>get</code>, dicts have methods for updating, grouping, and merging.</p>
+<h2>setdefault — get, or set then get</h2>
+<p>Great for building up groups: it returns the value if the key exists, otherwise
+inserts your default first.</p>
+<pre><code>groups = {}
+for word in ["ant", "ace", "bee"]:
+    groups.setdefault(word[0], []).append(word)
+# {'a': ['ant', 'ace'], 'b': ['bee']}</code></pre>
+<h2>update & pop</h2>
+<pre><code>config = {"debug": False}
+config.update({"debug": True, "level": 3})  # merge another dict in
+removed = config.pop("level")               # remove & return its value</code></pre>
+<h2>Merging with |</h2>
+<p>Python 3.9+ merges dicts with <code>|</code> (a new dict) or <code>|=</code>
+(in place). On key clashes, the <b>right-hand side wins</b>.</p>
+<pre><code>base = {"a": 1, "b": 2}
+extra = {"b": 9, "c": 3}
+print(base | extra)   # {'a': 1, 'b': 9, 'c': 3}</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>base | extra</code> leaves <code>base</code> untouched; <code>base |= extra</code>
+modifies <code>base</code>.</div></div>`,
+          starter: `inventory = {}
+for item in ["apple", "apple", "pear", "apple", "pear"]:
+    inventory[item] = inventory.get(item, 0) + 1
+print(inventory)
+
+prefs = {"theme": "light"} | {"theme": "dark", "size": "L"}
+print(prefs)`,
+        },
+        {
+          id: "m04-l13", kind: "exercise", title: "Exercise: Merge user settings",
+          docs: [{ label: "Dict merge |", url: "https://docs.python.org/3/library/stdtypes.html#dict" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Collections</div>
+<h1>Layer overrides on top of defaults</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Produce <code>settings</code> = <code>defaults</code> with
+      <code>overrides</code> layered on top (overrides win on clashes).</li>
+  <li>Crucially, <b>do not mutate</b> <code>defaults</code> — other code still
+      relies on it.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>defaults | overrides</code> builds a fresh dict and leaves both inputs
+alone. (<code>defaults.update(overrides)</code> would mutate it — avoid that
+here.)</div></div>`,
+          starter: `defaults  = {"theme": "light", "volume": 5, "lang": "en"}
+overrides = {"theme": "dark", "volume": 8}
+
+settings = defaults     # merge overrides on top, without changing defaults
+
+print(settings)`,
+          tests: [
+            { name: "settings has overrides applied", code: `assert settings == {"theme": "dark", "volume": 8, "lang": "en"}, f"Got {settings}"` },
+            { name: "settings equals defaults | overrides", code: `assert settings == (defaults | overrides), "Layer overrides on top of defaults"` },
+            { name: "defaults was not mutated", code: `assert defaults == {"theme": "light", "volume": 5, "lang": "en"}, "defaults should be unchanged"` },
+          ],
+        },
+        {
+          id: "m04-l14", kind: "exercise", title: "Exercise: Set algebra on skills",
+          docs: [{ label: "Set operations", url: "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" }],
+          content: `
+<div class="lc-eyebrow">Exercise · Collections</div>
+<h1>Compare two skill sets</h1>
+<p>Sets make "what's shared / unique / either" trivial. Compute four results from
+<code>alice</code> and <code>bob</code>.</p>
+<h3>Your task</h3>
+<ul>
+  <li><code>both</code> — skills they <b>share</b> (intersection).</li>
+  <li><code>either</code> — <b>all</b> skills combined (union).</li>
+  <li><code>only_alice</code> — skills Alice has that Bob lacks (difference).</li>
+  <li><code>exclusive</code> — skills exactly one of them has (symmetric
+      difference).</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+The operators are <code>&amp;</code> (and), <code>|</code> (or), <code>-</code>
+(minus), <code>^</code> (xor) — or the named methods
+<code>intersection</code>, <code>union</code>, <code>difference</code>,
+<code>symmetric_difference</code>.</div></div>`,
+          starter: `alice = {"python", "sql", "git", "docker"}
+bob   = {"git", "docker", "aws", "python"}
+
+both       = set()   # shared
+either     = set()   # all combined
+only_alice = set()   # Alice minus Bob
+exclusive  = set()   # exactly one of them
+
+print(both, either, only_alice, exclusive)`,
+          tests: [
+            { name: "both is the intersection", code: `assert both == (alice & bob) == {"python", "git", "docker"}, f"Got {both}"` },
+            { name: "either is the union", code: `assert either == (alice | bob), f"Got {either}"` },
+            { name: "only_alice is the difference", code: `assert only_alice == (alice - bob) == {"sql"}, f"Got {only_alice}"` },
+            { name: "exclusive is the symmetric difference", code: `assert exclusive == (alice ^ bob) == {"sql", "aws"}, f"Got {exclusive}"` },
           ],
         },
         {
@@ -2092,6 +2502,108 @@ print(f"Shipping took {days} days")`,
           ],
         },
         {
+          id: "m08-l08", kind: "lesson", title: "Parsing & formatting dates",
+          docs: [
+            { label: "strftime / strptime", url: "https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior" },
+            { label: "date.fromisoformat", url: "https://docs.python.org/3/library/datetime.html#datetime.date.fromisoformat" },
+          ],
+          content: `
+<div class="lc-eyebrow">Lesson 8 · The Standard Library</div>
+<h1>Text ⇄ dates</h1>
+<p>Dates almost always arrive as text and need to leave as text. Two methods are
+the bridge, and it's easy to mix them up:</p>
+<ul>
+  <li><code>strptime(text, fmt)</code> — <b>p</b>arse a string <i>into</i> a
+      datetime.</li>
+  <li><code>dt.strftime(fmt)</code> — <b>f</b>ormat a datetime <i>into</i> a
+      string.</li>
+</ul>
+<pre><code>from datetime import datetime
+dt = datetime.strptime("2024-03-09", "%Y-%m-%d")
+print(dt.strftime("%d %b %Y"))   # "09 Mar 2024"
+print(dt.strftime("%A"))         # "Saturday"</code></pre>
+<h2>Handy format codes</h2>
+<p><code>%Y</code> 4-digit year · <code>%m</code> month number ·
+<code>%d</code> day · <code>%b</code> short month name · <code>%A</code> weekday ·
+<code>%H:%M</code> time.</p>
+<h2>ISO shortcuts & arithmetic</h2>
+<pre><code>from datetime import date, timedelta
+d = date.fromisoformat("2024-03-09")   # quick parse of YYYY-MM-DD
+print(d + timedelta(days=7))           # 2024-03-16</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Memory aid: st<b>p</b>time <b>p</b>arses; str<b>f</b>time <b>f</b>ormats.</div></div>`,
+          starter: `from datetime import datetime
+
+dt = datetime.strptime("2024-12-25", "%Y-%m-%d")
+print(dt.strftime("%A, %d %B %Y"))`,
+        },
+        {
+          id: "m08-l09", kind: "exercise", title: "Exercise: Reformat a date",
+          docs: [{ label: "strftime codes", url: "https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior" }],
+          content: `
+<div class="lc-eyebrow">Exercise · The Standard Library</div>
+<h1>Change a date's clothes</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Parse <code>iso</code> (an <code>YYYY-MM-DD</code> string) with
+      <code>strptime</code>.</li>
+  <li>Format it into <code>out</code> as <code>DD Mon YYYY</code> — for
+      <code>"2024-03-09"</code> that's <code>09 Mar 2024</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Parse with <code>"%Y-%m-%d"</code>, then format with <code>"%d %b %Y"</code>.</div></div>`,
+          starter: `from datetime import datetime
+
+iso = "2024-03-09"
+
+out = iso     # parse with strptime, then strftime to "DD Mon YYYY"
+
+print(out)`,
+          tests: [
+            { name: "out is '09 Mar 2024'", code: `assert out == "09 Mar 2024", f"Expected '09 Mar 2024', got {out!r}"` },
+            { name: "it really came from parsing iso", code: `from datetime import datetime\nassert out == datetime.strptime(iso, "%Y-%m-%d").strftime("%d %b %Y"), "Parse iso then reformat it"` },
+          ],
+        },
+        {
+          id: "m08-l10", kind: "exercise", title: "Exercise: Sample statistics",
+          docs: [
+            { label: "random.sample", url: "https://docs.python.org/3/library/random.html#random.sample" },
+            { label: "statistics", url: "https://docs.python.org/3/library/statistics.html" },
+          ],
+          content: `
+<div class="lc-eyebrow">Exercise · The Standard Library</div>
+<h1>Draw a sample, summarise it</h1>
+<p>Seeding the random generator makes a "random" draw reproducible — essential for
+tests and for this exercise.</p>
+<h3>Your task</h3>
+<ul>
+  <li>Keep <code>random.seed(0)</code> and the pool as-is.</li>
+  <li>Draw <code>draw</code> = a <code>random.sample</code> of <b>5</b> numbers
+      from the pool.</li>
+  <li>Set <code>avg</code> to <code>statistics.mean(draw)</code> and
+      <code>med</code> to <code>statistics.median(draw)</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>random.sample(pool, k)</code> picks <code>k</code> distinct items without
+replacement.</div></div>`,
+          starter: `import random, statistics
+
+random.seed(0)
+pool = list(range(1, 101))
+
+draw = []     # random.sample(pool, 5)
+avg = 0       # statistics.mean(draw)
+med = 0       # statistics.median(draw)
+
+print("draw:", draw)
+print("mean:", avg, "median:", med)`,
+          tests: [
+            { name: "draw is the seeded sample of 5", code: `import random\nrandom.seed(0)\nassert draw == random.sample(list(range(1, 101)), 5), "Seed 0, then sample 5 from 1..100"` },
+            { name: "avg is the mean of your draw", code: `import statistics\nassert avg == statistics.mean(draw), "avg should be statistics.mean(draw)"` },
+            { name: "med is the median of your draw", code: `import statistics\nassert med == statistics.median(draw), "med should be statistics.median(draw)"` },
+          ],
+        },
+        {
           id: "m08-quiz", kind: "quiz", title: "Module 8 Check: Standard Library",
           intro: "math, random, datetime, collections, itertools, json.",
           questions: [
@@ -2511,6 +3023,1146 @@ print(slugify("  My First Post "))`,
             { q: "What does `pip freeze > requirements.txt` do?", options: ["Deletes packages", "Records exact installed versions", "Upgrades pip", "Runs tests"], answer: 1, explain: "It captures the current versions so others can reproduce them." },
             { q: "What does `assert x == 5` do when x is 3?", options: ["Prints 5", "Silently passes", "Raises an AssertionError", "Sets x to 5"], answer: 2, explain: "A failing assert raises AssertionError — that's how tests fail." },
             { q: "In pytest, test functions are named…", options: ["check_*", "test_*", "assert_*", "it_*"], answer: 1, explain: "pytest discovers functions whose names start with test_." },
+          ],
+        },
+      ],
+    },
+
+    /* ═══════════════ MODULE 11 ═══════════════ */
+    {
+      id: "m11", num: "Module 11", title: "Standard Library & Method Mastery",
+      icon: "fas fa-screwdriver-wrench",
+      desc: "Drill the exact methods that separate fluent Pythonistas from beginners — str, list, dict, set, the iteration toolkit, and re/datetime/pathlib.",
+      lessons: [
+        /* ───────── Section A · str mastery ───────── */
+        {
+          id: "m11-l01", kind: "lesson", title: "Splitting & joining",
+          docs: [
+            { label: "str.split()", url: "https://docs.python.org/3/library/stdtypes.html#str.split" },
+            { label: "str.join()", url: "https://docs.python.org/3/library/stdtypes.html#str.join" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section A · str mastery</div>
+<h1>Breaking text apart and back together</h1>
+<p>Turning text into a list of pieces — and a list back into text — is one of the
+most common things you'll do. These are the workhorses.</p>
+<h2>split & rsplit</h2>
+<p><code>split()</code> with no argument splits on any run of whitespace and drops
+empties. Give it a separator to split on that instead. <code>rsplit</code> works
+from the right and pairs nicely with <code>maxsplit</code>.</p>
+<pre><code>print("a,b,c".split(","))        # ['a', 'b', 'c']
+print("  one  two ".split())     # ['one', 'two']
+print("a.b.c".rsplit(".", 1))    # ['a.b', 'c']</code></pre>
+<h2>splitlines & join</h2>
+<pre><code>print("line1\\nline2".splitlines())  # ['line1', 'line2']
+print("-".join(["2024", "03", "09"])) # "2024-03-09"</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>join</code> is a method <i>of the separator</i>:
+<code>", ".join(items)</code>. The items must all be strings.</div></div>
+<h2>partition</h2>
+<p><code>partition(sep)</code> splits once and always returns three parts:
+<code>(before, sep, after)</code> — perfect for <code>key=value</code>.</p>
+<pre><code>print("name=Ada".partition("="))   # ('name', '=', 'Ada')</code></pre>`,
+          starter: `path = "usr/local/bin"
+parts = path.split("/")
+print(parts)
+print(" / ".join(parts))
+print("key=value".partition("="))`,
+        },
+        {
+          id: "m11-l02", kind: "exercise", title: "Exercise: Reverse the full name",
+          docs: [{ label: "str.split()", url: "https://docs.python.org/3/library/stdtypes.html#str.split" }],
+          content: `
+<div class="lc-eyebrow">Section A · str mastery</div>
+<h1>Surname first</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Split <code>full</code> into first and last name.</li>
+  <li>Build <code>flipped</code> in the shape <code>Last, First</code> — for
+      <code>"Ada Lovelace"</code> that's <code>Lovelace, Ada</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>first, last = full.split()</code> unpacks the two pieces in one line.</div></div>`,
+          starter: `full = "Ada Lovelace"
+
+flipped = full     # build "Last, First"
+
+print(flipped)`,
+          tests: [
+            { name: "flipped is 'Lovelace, Ada'", code: `assert flipped == "Lovelace, Ada", f"Expected 'Lovelace, Ada', got {flipped!r}"` },
+            { name: "it works by splitting full", code: `parts = full.split()\nassert flipped == f"{parts[-1]}, {parts[0]}", "Build it from the split pieces of full"` },
+          ],
+        },
+        {
+          id: "m11-l03", kind: "exercise", title: "Exercise: Parse key=value lines",
+          docs: [{ label: "str.partition()", url: "https://docs.python.org/3/library/stdtypes.html#str.partition" }],
+          content: `
+<div class="lc-eyebrow">Section A · str mastery</div>
+<h1>Config text → dictionary</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>blob</code> holds one <code>key=value</code> per line.</li>
+  <li>Build <code>config</code>, a dict mapping each key to its value (as a
+      string).</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Loop over <code>blob.splitlines()</code>, then
+<code>key, _, value = line.partition("=")</code>.</div></div>`,
+          starter: `blob = "name=Ada\\nrole=admin\\nlevel=7"
+
+config = {}
+# fill config from each line
+
+print(config)`,
+          tests: [
+            { name: "config has all three keys", code: `assert config == {"name": "Ada", "role": "admin", "level": "7"}, f"Got {config}"` },
+            { name: "values are strings", code: `assert all(isinstance(v, str) for v in config.values()), "Keep values as strings"` },
+          ],
+        },
+        {
+          id: "m11-l04", kind: "exercise", title: "Exercise: Case-insensitive search",
+          docs: [{ label: "str.casefold()", url: "https://docs.python.org/3/library/stdtypes.html#str.casefold" }],
+          content: `
+<div class="lc-eyebrow">Section A · str mastery</div>
+<h1>Count a word, ignoring case</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Count how many times <code>word</code> appears in <code>text</code>,
+      <b>ignoring case</b>, into <code>hits</code>.</li>
+  <li>Find the index of the first case-insensitive match into
+      <code>first_at</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Lower-case both sides with <code>casefold()</code>, then use <code>count</code> and
+<code>find</code>.</div></div>`,
+          starter: `text = "The cat sat on the mat. THE END."
+word = "the"
+
+hits = 0       # case-insensitive count
+first_at = -1  # index of first case-insensitive match
+
+print(hits, first_at)`,
+          tests: [
+            { name: "hits counts every case", code: `assert hits == text.casefold().count(word.casefold()) == 3, f"Expected 3, got {hits}"` },
+            { name: "first_at is 0", code: `assert first_at == text.casefold().find(word.casefold()) == 0, f"Got {first_at}"` },
+          ],
+        },
+        {
+          id: "m11-quizA", kind: "quiz", title: "Section A Check: Strings",
+          intro: "split, join, partition, find, and casefold.",
+          questions: [
+            { q: "split() with no arguments splits on…", options: ["commas", "any run of whitespace", "newlines only", "every character"], answer: 1, explain: "Bare split() splits on whitespace and drops empty pieces." },
+            { q: "What does 'a,b,c'.split(',') return?", options: ["'a','b','c'", "['a', 'b', 'c']", "('a', 'b', 'c')", "'abc'"], answer: 1, explain: "split returns a list of strings." },
+            { q: "What does ' '.join(['a', 'b']) give?", options: ["['a', 'b']", "'a b'", "'ab'", "an error"], answer: 1, explain: "join glues items with the separator string." },
+            { q: "'Hello'.find('z') returns…", options: ["0", "-1", "a ValueError", "None"], answer: 1, explain: "find returns -1 on a miss (index() would raise)." },
+            { q: "Why casefold() before comparing text?", options: ["to sort it", "for case-insensitive matching", "to remove spaces", "to reverse it"], answer: 1, explain: "casefold normalises case so comparisons ignore it." },
+          ],
+        },
+
+        /* ───────── Section B · list mastery ───────── */
+        {
+          id: "m11-l05", kind: "lesson", title: "Mutation vs new lists",
+          docs: [{ label: "Mutable sequence types", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
+          content: `
+<div class="lc-eyebrow">Section B · list mastery</div>
+<h1>Reshaping lists</h1>
+<p>List methods mostly mutate in place and return <code>None</code>. Slicing, by
+contrast, returns a <i>new</i> list — unless you assign <i>to</i> a slice.</p>
+<h2>The mutating crew</h2>
+<pre><code>xs = [1, 2, 3]
+xs.append(4)        # [1, 2, 3, 4]
+xs.extend([5, 6])   # [1, 2, 3, 4, 5, 6]
+xs.insert(0, 0)     # [0, 1, 2, 3, 4, 5, 6]
+xs.remove(3)        # drops first 3
+top = xs.pop()      # removes & returns the last</code></pre>
+<h2>Slicing reads, slice-assignment writes</h2>
+<pre><code>nums = [0, 1, 2, 3, 4, 5]
+print(nums[::-1])   # [5, 4, 3, 2, 1, 0]  (a new reversed list)
+print(nums[::2])    # [0, 2, 4]           (every other)
+nums[1:4] = [99]    # replace a whole range → [0, 99, 4, 5]</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>nums.copy()</code> (or <code>nums[:]</code>) gives an independent list, so
+edits to one don't touch the other.</div></div>`,
+          starter: `nums = [0, 1, 2, 3, 4, 5]
+print("reversed:", nums[::-1])
+print("evens:", nums[::2])
+nums[1:4] = ["x"]
+print("after slice assign:", nums)`,
+        },
+        {
+          id: "m11-l06", kind: "exercise", title: "Exercise: Run the edit script",
+          docs: [{ label: "list.pop()", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
+          content: `
+<div class="lc-eyebrow">Section B · list mastery</div>
+<h1>Apply the edits in order</h1>
+<h3>Your task</h3>
+<ol>
+  <li><code>append</code> <code>40</code>.</li>
+  <li><code>insert</code> <code>5</code> at index <code>0</code>.</li>
+  <li><code>remove</code> the value <code>20</code>.</li>
+  <li><code>pop</code> the item at index <code>1</code> into <code>popped</code>.</li>
+</ol>`,
+          starter: `data = [10, 20, 30]
+popped = None
+# apply the four edits in order
+
+print(data, popped)`,
+          tests: [
+            { name: "data ends as [5, 30, 40]", code: `assert data == [5, 30, 40], f"Got {data}"` },
+            { name: "popped is 10", code: `assert popped == 10, f"Expected 10, got {popped!r}"` },
+          ],
+        },
+        {
+          id: "m11-l07", kind: "exercise", title: "Exercise: Slice surgery",
+          docs: [{ label: "Slicing", url: "https://docs.python.org/3/library/stdtypes.html#common-sequence-operations" }],
+          content: `
+<div class="lc-eyebrow">Section B · list mastery</div>
+<h1>Slices that read and write</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Save an independent <code>backup</code> of <code>nums</code>.</li>
+  <li><code>reversed_nums</code> = <code>nums</code> reversed via a slice.</li>
+  <li><code>every_other</code> = every second item via a step slice.</li>
+  <li>Replace items at indices <code>1,2,3</code> of <code>nums</code> with the
+      single value <code>99</code> using slice assignment.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>nums[::-1]</code>, <code>nums[::2]</code>, and
+<code>nums[1:4] = [99]</code>. Take <code>backup</code> <i>before</i> the
+assignment.</div></div>`,
+          starter: `nums = [0, 1, 2, 3, 4, 5]
+
+backup = nums          # make it independent!
+reversed_nums = nums   # nums[::-1]
+every_other = nums     # nums[::2]
+# now slice-assign indices 1..3 to a single 99
+
+print(nums, backup, reversed_nums, every_other)`,
+          tests: [
+            { name: "reversed_nums is fully reversed", code: `assert reversed_nums == [5, 4, 3, 2, 1, 0], f"Got {reversed_nums}"` },
+            { name: "every_other took a step of 2", code: `assert every_other == [0, 2, 4], f"Got {every_other}"` },
+            { name: "slice assignment collapsed 1..3 to 99", code: `assert nums == [0, 99, 4, 5], f"Got {nums}"` },
+            { name: "backup stayed independent", code: `assert backup == [0, 1, 2, 3, 4, 5], "backup should be an unchanged copy of the original"` },
+          ],
+        },
+        {
+          id: "m11-l08", kind: "exercise", title: "Exercise: Multi-key sort",
+          docs: [{ label: "sorted(key=...)", url: "https://docs.python.org/3/library/functions.html#sorted" }],
+          content: `
+<div class="lc-eyebrow">Section B · list mastery</div>
+<h1>Sort by two fields</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>records</code> are dicts with <code>dept</code> and
+      <code>salary</code>.</li>
+  <li>Build <code>ordered</code>: by <b>dept A→Z</b>, then within a dept by
+      <b>salary, highest first</b>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>key=lambda r: (r["dept"], -r["salary"])</code> — ascending dept, descending
+salary.</div></div>`,
+          starter: `records = [
+    {"dept": "A", "salary": 50},
+    {"dept": "B", "salary": 50},
+    {"dept": "A", "salary": 70},
+]
+
+ordered = records   # sort by dept asc, salary desc
+
+for r in ordered:
+    print(r["dept"], r["salary"])`,
+          tests: [
+            { name: "ordered matches the reference sort", code: `assert ordered == sorted(records, key=lambda r: (r["dept"], -r["salary"])), "dept ascending, salary descending"` },
+            { name: "the first record is A/70", code: `assert ordered[0] == {"dept": "A", "salary": 70}, f"Got {ordered[0]}"` },
+          ],
+        },
+        {
+          id: "m11-quizB", kind: "quiz", title: "Section B Check: Lists",
+          intro: "Mutation, slicing, and sorting.",
+          questions: [
+            { q: "nums.append([1, 2]) adds…", options: ["two items", "one list as a single item", "nothing", "an error"], answer: 1, explain: "append adds its argument as one element; extend adds each item." },
+            { q: "list.sort() returns…", options: ["a new sorted list", "None (it sorts in place)", "the first item", "a tuple"], answer: 1, explain: "sort mutates in place and returns None; use sorted() for a new list." },
+            { q: "x = [1, 2, 3]; x.pop() returns / leaves…", options: ["1 / [2, 3]", "3 / [1, 2]", "None / [1, 2]", "3 / [1, 2, 3]"], answer: 1, explain: "pop() removes and returns the last item." },
+            { q: "nums[::-1] produces…", options: ["a reversed copy", "the list sorted", "every other item", "an error"], answer: 0, explain: "A step of -1 returns a new, reversed list." },
+            { q: "Is Python's sort stable?", options: ["No", "Yes — equal items keep their order", "Only for numbers", "Only with key="], answer: 1, explain: "Stable sorting is what makes multi-key sorts work." },
+          ],
+        },
+
+        /* ───────── Section C · dict & set mastery ───────── */
+        {
+          id: "m11-l09", kind: "lesson", title: "Dict methods & comprehensions",
+          docs: [{ label: "dict", url: "https://docs.python.org/3/library/stdtypes.html#dict" }],
+          content: `
+<div class="lc-eyebrow">Section C · dict & set mastery</div>
+<h1>Building and transforming dicts</h1>
+<h2>The essential methods</h2>
+<pre><code>d = {"a": 1}
+d.get("z", 0)          # 0 — safe read with a default
+d.setdefault("a", 99)  # 1 — key exists, default ignored
+d.update({"b": 2})     # merge another dict in
+d.pop("a")             # remove "a" and return its value
+for k, v in d.items(): # iterate pairs
+    print(k, v)</code></pre>
+<h2>Dict comprehensions</h2>
+<p>Build a dict from any iterable, just like a list comprehension:</p>
+<pre><code>squares = {n: n*n for n in range(4)}   # {0:0, 1:1, 2:4, 3:9}
+prices = {"pen": 2, "pad": 5}
+inverted = {v: k for k, v in prices.items()}  # {2:'pen', 5:'pad'}</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Merge with <code>a | b</code> (new dict) — the right-hand dict wins on clashes.</div></div>`,
+          starter: `prices = {"pen": 2, "pad": 5, "ink": 9}
+cheap = {k: v for k, v in prices.items() if v < 6}
+print(cheap)
+print({v: k for k, v in prices.items()})`,
+        },
+        {
+          id: "m11-l10", kind: "exercise", title: "Exercise: Invert a mapping",
+          docs: [{ label: "dict.items()", url: "https://docs.python.org/3/library/stdtypes.html#dict.items" }],
+          content: `
+<div class="lc-eyebrow">Section C · dict & set mastery</div>
+<h1>Swap keys and values</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Build <code>inverted</code> from <code>codes</code> so each value becomes a
+      key and vice-versa.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+A dict comprehension does it in one line:
+<code>{v: k for k, v in codes.items()}</code>.</div></div>`,
+          starter: `codes = {"red": "#f00", "green": "#0f0", "blue": "#00f"}
+
+inverted = {}   # value -> key
+
+print(inverted)`,
+          tests: [
+            { name: "inverted swaps keys and values", code: `assert inverted == {v: k for k, v in codes.items()}, "Map each value back to its key"` },
+            { name: "you can look up by colour code", code: `assert inverted["#0f0"] == "green", f"Got {inverted.get('#0f0')!r}"` },
+          ],
+        },
+        {
+          id: "m11-l11", kind: "exercise", title: "Exercise: Group words by length",
+          docs: [{ label: "dict.setdefault()", url: "https://docs.python.org/3/library/stdtypes.html#dict.setdefault" }],
+          content: `
+<div class="lc-eyebrow">Section C · dict & set mastery</div>
+<h1>Bucket words by their length</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Build <code>groups</code>, a dict mapping a word length to the <b>list</b> of
+      words with that length, keeping each word's original order.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>groups.setdefault(len(w), []).append(w)</code> creates the list on first
+sight of a length, then appends to it.</div></div>`,
+          starter: `words = ["hi", "cat", "ox", "dog", "be", "ant"]
+
+groups = {}
+# group words by their length
+
+print(groups)`,
+          tests: [
+            { name: "groups buckets by length", code: `expected = {}\nfor w in words:\n    expected.setdefault(len(w), []).append(w)\nassert groups == expected, f"Got {groups}"` },
+            { name: "the keys are the lengths present", code: `assert set(groups.keys()) == {2, 3}, f"Got keys {set(groups.keys())}"` },
+          ],
+        },
+        {
+          id: "m11-l12", kind: "lesson", title: "Set algebra",
+          docs: [{ label: "set types", url: "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" }],
+          content: `
+<div class="lc-eyebrow">Section C · dict & set mastery</div>
+<h1>Thinking in sets</h1>
+<p>Sets hold unique items and answer "membership" questions instantly. Four
+operations cover almost everything:</p>
+<pre><code>a = {1, 2, 3}
+b = {3, 4, 5}
+print(a | b)   # union          {1, 2, 3, 4, 5}
+print(a & b)   # intersection   {3}
+print(a - b)   # difference     {1, 2}
+print(a ^ b)   # symmetric diff {1, 2, 4, 5}</code></pre>
+<p>Each has a named method too: <code>union</code>, <code>intersection</code>,
+<code>difference</code>, <code>symmetric_difference</code>.</p>
+<h2>Membership & subsets</h2>
+<pre><code>print(2 in a)            # True
+print({1, 2}.issubset(a)) # True
+a.add(9)
+a.discard(99)  # discard never errors; remove() would</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+Sets are <b>unordered</b> — never rely on iteration order, and compare with
+<code>==</code> (which ignores order) rather than converting to a list.</div></div>`,
+          starter: `frontend = {"html", "css", "js"}
+backend = {"py", "sql", "js"}
+print("shared:", frontend & backend)
+print("either:", frontend | backend)
+print("front only:", frontend - backend)`,
+        },
+        {
+          id: "m11-l13", kind: "exercise", title: "Exercise: Common & exclusive",
+          docs: [{ label: "Set operations", url: "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" }],
+          content: `
+<div class="lc-eyebrow">Section C · dict & set mastery</div>
+<h1>Compare two sets</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>shared</code> — items in <b>both</b> <code>a</code> and
+      <code>b</code>.</li>
+  <li><code>exclusive</code> — items in <b>exactly one</b> of them.</li>
+</ul>`,
+          starter: `a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+shared = set()      # in both
+exclusive = set()   # in exactly one
+
+print(shared, exclusive)`,
+          tests: [
+            { name: "shared is the intersection", code: `assert shared == (a & b) == {3, 4}, f"Got {shared}"` },
+            { name: "exclusive is the symmetric difference", code: `assert exclusive == (a ^ b) == {1, 2, 5, 6}, f"Got {exclusive}"` },
+          ],
+        },
+        {
+          id: "m11-quizC", kind: "quiz", title: "Section C Check: Dicts & Sets",
+          intro: "get, setdefault, merging, and set operations.",
+          questions: [
+            { q: "d.get('x', 0) when 'x' is missing returns…", options: ["a KeyError", "0", "None", "'x'"], answer: 1, explain: "get returns the default instead of raising." },
+            { q: "setdefault(k, []) does what?", options: ["always overwrites k", "returns the existing value, or inserts the default then returns it", "deletes k", "raises if k exists"], answer: 1, explain: "It's get-or-create in one call — ideal for grouping." },
+            { q: "{'a': 1} | {'a': 2} gives…", options: ["{'a': 1}", "{'a': 2}", "{'a': [1, 2]}", "an error"], answer: 1, explain: "On a clash the right-hand dict wins." },
+            { q: "a & b on sets is the…", options: ["union", "intersection", "difference", "symmetric difference"], answer: 1, explain: "& is intersection (items in both)." },
+            { q: "a ^ b on sets is…", options: ["items in both", "items in exactly one", "all items", "no items"], answer: 1, explain: "^ is the symmetric difference." },
+          ],
+        },
+
+        /* ───────── Section D · iteration toolkit ───────── */
+        {
+          id: "m11-l14", kind: "lesson", title: "enumerate, zip, reversed",
+          docs: [
+            { label: "enumerate()", url: "https://docs.python.org/3/library/functions.html#enumerate" },
+            { label: "zip()", url: "https://docs.python.org/3/library/functions.html#zip" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Looping like a pro</h1>
+<p>Reach for these built-ins instead of manual index bookkeeping.</p>
+<h2>enumerate — index + item</h2>
+<pre><code>for i, name in enumerate(["a", "b"], start=1):
+    print(i, name)      # 1 a / 2 b</code></pre>
+<h2>zip — walk lists together</h2>
+<pre><code>names = ["Ada", "Bo"]
+scores = [90, 85]
+print(dict(zip(names, scores)))  # {'Ada': 90, 'Bo': 85}</code></pre>
+<p><code>zip</code> stops at the <b>shortest</b> input. To pad to the longest
+instead, use <code>itertools.zip_longest(..., fillvalue=0)</code>.</p>
+<h2>reversed</h2>
+<pre><code>for x in reversed([1, 2, 3]):
+    print(x)            # 3, 2, 1</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>enumerate</code> defaults to starting at 0 — pass <code>start=1</code> when
+you want human-friendly numbering.</div></div>`,
+          starter: `fruits = ["apple", "pear", "plum"]
+for rank, fruit in enumerate(fruits, start=1):
+    print(f"{rank}. {fruit}")
+
+print(dict(zip(fruits, [3, 5, 2])))`,
+        },
+        {
+          id: "m11-l15", kind: "exercise", title: "Exercise: Numbered roster",
+          docs: [{ label: "enumerate()", url: "https://docs.python.org/3/library/functions.html#enumerate" }],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Number the names</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Build <code>lines</code> = <code>["1. Ada", "2. Bo", "3. Cy"]</code> using
+      <code>enumerate</code> starting at 1.</li>
+  <li>Print each line.</li>
+</ul>`,
+          starter: `names = ["Ada", "Bo", "Cy"]
+
+lines = []   # ["1. Ada", "2. Bo", "3. Cy"]
+
+for line in lines:
+    print(line)`,
+          tests: [
+            { name: "lines are numbered from 1", code: `assert lines == [f"{i}. {n}" for i, n in enumerate(names, start=1)] == ["1. Ada", "2. Bo", "3. Cy"], f"Got {lines}"` },
+            { name: "you printed the first line", code: `assert "1. Ada" in __stdout__, "Print each numbered line"` },
+          ],
+        },
+        {
+          id: "m11-l16", kind: "exercise", title: "Exercise: Merge columns",
+          docs: [{ label: "itertools.zip_longest", url: "https://docs.python.org/3/library/itertools.html#itertools.zip_longest" }],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Pair names with scores</h1>
+<p>The lists are <b>ragged</b> — there's one more name than score.</p>
+<h3>Your task</h3>
+<ul>
+  <li><code>paired</code> = a dict from <code>zip(names, scores)</code> (the extra
+      name is dropped).</li>
+  <li><code>padded</code> = <code>list(zip_longest(names, scores, fillvalue=0))</code>
+      so every name is kept, missing scores becoming <code>0</code>.</li>
+</ul>`,
+          starter: `from itertools import zip_longest
+
+names = ["Ada", "Bo", "Cy"]
+scores = [90, 85]
+
+paired = {}    # dict(zip(...))
+padded = []    # list(zip_longest(..., fillvalue=0))
+
+print(paired)
+print(padded)`,
+          tests: [
+            { name: "paired drops the unmatched name", code: `assert paired == {"Ada": 90, "Bo": 85}, f"Got {paired}"` },
+            { name: "padded keeps everyone, filling with 0", code: `from itertools import zip_longest\nassert padded == list(zip_longest(names, scores, fillvalue=0)) == [("Ada", 90), ("Bo", 85), ("Cy", 0)], f"Got {padded}"` },
+          ],
+        },
+        {
+          id: "m11-l17", kind: "lesson", title: "key=, any/all, map/filter",
+          docs: [
+            { label: "max()", url: "https://docs.python.org/3/library/functions.html#max" },
+            { label: "any() / all()", url: "https://docs.python.org/3/library/functions.html#all" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Reduce a sequence to an answer</h1>
+<h2>min / max with key=</h2>
+<pre><code>words = ["fig", "apple", "kiwi"]
+print(max(words, key=len))   # 'apple'
+print(min(words, key=len))   # 'fig'</code></pre>
+<h2>any / all</h2>
+<pre><code>nums = [2, 4, 6]
+print(all(n % 2 == 0 for n in nums))  # True
+print(any(n > 5 for n in nums))       # True</code></pre>
+<p>Edge cases worth memorising: <code>all([])</code> is <code>True</code>,
+<code>any([])</code> is <code>False</code>.</p>
+<h2>map / filter</h2>
+<pre><code>nums = [1, 2, 3, 4]
+evens = filter(lambda n: n % 2 == 0, nums)
+print(list(map(lambda n: n * n, evens)))  # [4, 16]</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>map</code> and <code>filter</code> return lazy iterators — wrap them in
+<code>list(...)</code> to see the results.</div></div>`,
+          starter: `temps = [12, 19, 7, 23, 15]
+print("hottest:", max(temps))
+print("all above zero?", all(t > 0 for t in temps))
+print("doubled:", list(map(lambda t: t * 2, temps)))`,
+        },
+        {
+          id: "m11-l18", kind: "exercise", title: "Exercise: Word stats with key=",
+          docs: [{ label: "max(key=...)", url: "https://docs.python.org/3/library/functions.html#max" }],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Longest, shortest, all-alpha</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>longest</code> = the longest word (use <code>max(..., key=len)</code>).</li>
+  <li><code>shortest</code> = the shortest word.</li>
+  <li><code>all_alpha</code> = <code>True</code> if every word is letters-only.</li>
+</ul>`,
+          starter: `words = ["fig", "apple", "kiwi", "banana"]
+
+longest = ""    # max by length
+shortest = ""   # min by length
+all_alpha = False  # all words isalpha()?
+
+print(longest, shortest, all_alpha)`,
+          tests: [
+            { name: "longest is 'banana'", code: `assert longest == max(words, key=len) == "banana", f"Got {longest!r}"` },
+            { name: "shortest is 'fig'", code: `assert shortest == min(words, key=len) == "fig", f"Got {shortest!r}"` },
+            { name: "all_alpha is True", code: `assert all_alpha is True and all_alpha == all(w.isalpha() for w in words), "Use all() with str.isalpha"` },
+          ],
+        },
+        {
+          id: "m11-l19", kind: "exercise", title: "Exercise: map/filter pipeline",
+          docs: [{ label: "map() / filter()", url: "https://docs.python.org/3/library/functions.html#map" }],
+          content: `
+<div class="lc-eyebrow">Section D · iteration toolkit</div>
+<h1>Square the even numbers</h1>
+<h3>Your task</h3>
+<ul>
+  <li>From <code>nums</code>, keep the even numbers, square them, and collect the
+      results into the list <code>result</code> — using <code>map</code> and
+      <code>filter</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>list(map(lambda x: x*x, filter(lambda x: x % 2 == 0, nums)))</code>.</div></div>`,
+          starter: `nums = [1, 2, 3, 4, 5, 6]
+
+result = []   # squares of the even numbers
+
+print(result)`,
+          tests: [
+            { name: "result is the squared evens", code: `assert result == [x*x for x in nums if x % 2 == 0] == [4, 16, 36], f"Got {result}"` },
+            { name: "result is a list", code: `assert isinstance(result, list), "Wrap the map/filter in list(...)"` },
+          ],
+        },
+        {
+          id: "m11-quizD", kind: "quiz", title: "Section D Check: Iteration",
+          intro: "enumerate, zip, key=, any/all, map/filter.",
+          questions: [
+            { q: "enumerate(seq, start=1) gives the first index as…", options: ["0", "1", "len(seq)", "-1"], answer: 1, explain: "start sets the first index." },
+            { q: "zip stops when…", options: ["the longest input ends", "the shortest input ends", "never", "it reaches 10 items"], answer: 1, explain: "zip truncates to the shortest; zip_longest pads instead." },
+            { q: "sorted(words, key=len) sorts by…", options: ["the alphabet", "length", "reverse order", "random"], answer: 1, explain: "key transforms each item before comparing." },
+            { q: "all([]) returns…", options: ["True", "False", "None", "an error"], answer: 0, explain: "all() of an empty iterable is True (nothing fails)." },
+            { q: "any([0, '', None]) returns…", options: ["True", "False", "an error", "None"], answer: 1, explain: "All items are falsy, so any() is False." },
+            { q: "list(map(f, xs)) does what?", options: ["filters xs", "applies f to each item", "sorts xs", "sums xs"], answer: 1, explain: "map applies f to every element." },
+          ],
+        },
+
+        /* ───────── Section E · itertools ───────── */
+        {
+          id: "m11-l20", kind: "lesson", title: "Infinite & slicing iterators",
+          docs: [{ label: "itertools", url: "https://docs.python.org/3/library/itertools.html" }],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Lazy streams you control</h1>
+<p><code>itertools</code> builds iterators that compute items on demand — including
+<b>infinite</b> ones. The golden rule: always bound an infinite iterator with
+<code>islice</code> (or a <code>break</code>), or your program hangs.</p>
+<pre><code>from itertools import count, cycle, islice, takewhile
+
+# count: 10, 12, 14, ...  (infinite!)
+print(list(islice(count(10, 2), 4)))   # [10, 12, 14, 16]
+
+# cycle: A, B, A, B, ...  (infinite!)
+print(list(islice(cycle("AB"), 5)))    # ['A','B','A','B','A']
+
+# takewhile: stop the first time the test fails
+print(list(takewhile(lambda n: n < 5, [1, 3, 5, 1])))  # [1, 3]</code></pre>
+<div class="callout"><i class="fas fa-triangle-exclamation"></i><div>
+<code>list(count(1))</code> with no <code>islice</code> never finishes. Always cap
+the stream.</div></div>`,
+          starter: `from itertools import count, islice
+# first 5 multiples of 3, generated lazily
+print(list(islice(count(3, 3), 5)))`,
+        },
+        {
+          id: "m11-l21", kind: "exercise", title: "Exercise: First N squares lazily",
+          docs: [{ label: "itertools.islice", url: "https://docs.python.org/3/library/itertools.html#itertools.islice" }],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Squares without a range</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Using <code>count(1)</code> and <code>islice</code>, build
+      <code>squares</code> = the first <b>10</b> square numbers
+      (<code>1, 4, 9, …, 100</code>).</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>islice(map(lambda n: n*n, count(1)), 10)</code>, then wrap in
+<code>list(...)</code>.</div></div>`,
+          starter: `from itertools import count, islice
+
+squares = []   # first 10 squares, generated lazily
+
+print(squares)`,
+          tests: [
+            { name: "squares is the first ten squares", code: `assert squares == [n*n for n in range(1, 11)] == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100], f"Got {squares}"` },
+          ],
+        },
+        {
+          id: "m11-l22", kind: "lesson", title: "Combinatorics & grouping",
+          docs: [
+            { label: "combinations / permutations", url: "https://docs.python.org/3/library/itertools.html#itertools.combinations" },
+            { label: "accumulate", url: "https://docs.python.org/3/library/itertools.html#itertools.accumulate" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Combine, accumulate, group</h1>
+<pre><code>from itertools import combinations, permutations, accumulate, chain, product
+
+print(list(combinations("ABC", 2)))  # AB AC BC  (order doesn't matter)
+print(list(permutations("ABC", 2)))  # AB AC BA BC CA CB  (order matters)
+print(list(accumulate([1, 2, 3, 4]))) # [1, 3, 6, 10]  (running totals)
+print(list(chain([1, 2], [3, 4])))    # [1, 2, 3, 4]
+print(list(product([1, 2], "ab")))    # every pair across the two</code></pre>
+<h2>groupby — but sort first!</h2>
+<p><code>groupby</code> only groups <b>consecutive</b> equal keys. To group an
+unsorted collection, sort by the same key first.</p>
+<pre><code>from itertools import groupby
+data = ["apple", "avocado", "banana"]
+data.sort(key=lambda w: w[0])
+for letter, items in groupby(data, key=lambda w: w[0]):
+    print(letter, list(items))</code></pre>
+<div class="callout"><i class="fas fa-triangle-exclamation"></i><div>
+Forgetting to sort before <code>groupby</code> is the #1 mistake — you'll get
+several little groups for the same key.</div></div>`,
+          starter: `from itertools import accumulate, combinations
+print(list(accumulate([10, 20, 30])))
+print(list(combinations(["a", "b", "c"], 2)))`,
+        },
+        {
+          id: "m11-l23", kind: "exercise", title: "Exercise: Pair everyone up",
+          docs: [{ label: "itertools.combinations", url: "https://docs.python.org/3/library/itertools.html#itertools.combinations" }],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Every unique pairing</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Build <code>pairs</code> = every unique 2-person pairing of
+      <code>team</code> (order within a pair doesn't matter).</li>
+</ul>`,
+          starter: `from itertools import combinations
+
+team = ["Ada", "Bo", "Cy", "Di"]
+
+pairs = []   # list(combinations(team, 2))
+
+print(pairs)`,
+          tests: [
+            { name: "pairs are all 2-combinations", code: `from itertools import combinations\nassert pairs == list(combinations(team, 2)), "Use combinations(team, 2)"` },
+            { name: "there are 6 pairs", code: `assert len(pairs) == 6, f"Expected 6 pairs, got {len(pairs)}"` },
+          ],
+        },
+        {
+          id: "m11-l24", kind: "exercise", title: "Exercise: Running balance",
+          docs: [{ label: "itertools.accumulate", url: "https://docs.python.org/3/library/itertools.html#itertools.accumulate" }],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Account balance after each transaction</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Given <code>tx</code> (deposits and withdrawals), build
+      <code>balances</code> = the running total after each one.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>list(accumulate(tx))</code> gives the cumulative sums.</div></div>`,
+          starter: `from itertools import accumulate
+
+tx = [100, -30, -20, 50]
+
+balances = []   # running total after each transaction
+
+print(balances)`,
+          tests: [
+            { name: "balances are the running totals", code: `from itertools import accumulate\nassert balances == list(accumulate(tx)) == [100, 70, 50, 100], f"Got {balances}"` },
+          ],
+        },
+        {
+          id: "m11-l25", kind: "exercise", title: "Exercise: Group by first letter",
+          docs: [{ label: "itertools.groupby", url: "https://docs.python.org/3/library/itertools.html#itertools.groupby" }],
+          content: `
+<div class="lc-eyebrow">Section E · itertools</div>
+<h1>Bucket words by first letter</h1>
+<p>Remember: <code>groupby</code> only groups <b>consecutive</b> items, so sort by
+the key first.</p>
+<h3>Your task</h3>
+<ul>
+  <li>Build <code>grouped</code>, a dict mapping each first letter to the list of
+      words starting with it.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Sort by <code>w[0]</code>, then
+<code>{k: list(g) for k, g in groupby(sorted_words, key=lambda w: w[0])}</code>.</div></div>`,
+          starter: `from itertools import groupby
+
+words = ["apple", "avocado", "banana", "cherry", "cranberry", "blueberry"]
+
+grouped = {}   # first letter -> list of words
+
+print(grouped)`,
+          tests: [
+            { name: "grouped buckets by first letter", code: `from itertools import groupby\nref = {k: list(g) for k, g in groupby(sorted(words, key=lambda w: w[0]), key=lambda w: w[0])}\nassert {k: sorted(v) for k, v in grouped.items()} == {k: sorted(v) for k, v in ref.items()}, f"Got {grouped}"` },
+            { name: "the keys are a, b, c", code: `assert set(grouped.keys()) == {"a", "b", "c"}, f"Got {set(grouped.keys())}"` },
+          ],
+        },
+        {
+          id: "m11-quizE", kind: "quiz", title: "Section E Check: itertools",
+          intro: "Infinite iterators, combinatorics, accumulate, groupby.",
+          questions: [
+            { q: "Why wrap count(1) in islice?", options: ["to sort it", "it's infinite — you must bound it", "to reverse it", "to make a set"], answer: 1, explain: "count is infinite; islice caps how many you take." },
+            { q: "Order matters in…", options: ["combinations", "permutations", "both", "neither"], answer: 1, explain: "permutations counts AB and BA separately; combinations doesn't." },
+            { q: "accumulate([1, 2, 3]) yields…", options: ["[1, 2, 3]", "[1, 3, 6]", "[6]", "[1, 2, 3, 6]"], answer: 1, explain: "Running totals: 1, 1+2, 1+2+3." },
+            { q: "groupby requires its input to be…", options: ["a set", "sorted by the grouping key", "reversed", "a dict"], answer: 1, explain: "It only groups consecutive equal keys." },
+            { q: "chain([1, 2], [3, 4]) yields…", options: ["'1234'", "1, 2, 3, 4 in sequence", "[[1, 2], [3, 4]]", "an error"], answer: 1, explain: "chain flattens the iterables one after another." },
+            { q: "product([1, 2], [3, 4]) has how many items?", options: ["2", "4", "1", "8"], answer: 1, explain: "It's the Cartesian product: 2 × 2 = 4 pairs." },
+          ],
+        },
+
+        /* ───────── Section F · re (regular expressions) ───────── */
+        {
+          id: "m11-l26", kind: "lesson", title: "match, search, findall",
+          docs: [
+            { label: "re module", url: "https://docs.python.org/3/library/re.html" },
+            { label: "re.findall", url: "https://docs.python.org/3/library/re.html#re.findall" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section F · regular expressions</div>
+<h1>Finding patterns in text</h1>
+<p>Regular expressions describe <i>shapes</i> of text. Always write patterns as
+<b>raw strings</b> (<code>r"..."</code>) so backslashes mean what you expect.</p>
+<h2>The three you'll use most</h2>
+<pre><code>import re
+s = "Order 12 shipped"
+re.search(r"\\d+", s)   # finds the first match ANYWHERE → match for "12"
+re.match(r"\\d+", s)    # only matches at the START → None here
+re.findall(r"\\d+", s)  # ALL matches as a list → ['12']</code></pre>
+<p>Common pieces: <code>\\d</code> a digit, <code>\\w</code> a word character,
+<code>\\s</code> whitespace, <code>+</code> one-or-more, <code>*</code>
+zero-or-more, <code>.</code> any character.</p>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>search</code> looks anywhere; <code>match</code> is anchored to the start.
+Both return a match object (or <code>None</code>); <code>findall</code> returns a
+plain list of strings.</div></div>`,
+          starter: `import re
+text = "There are 3 cats and 12 dogs"
+print(re.findall(r"\\d+", text))   # ['3', '12']
+print(re.search(r"\\d+", text).group())  # '3'`,
+        },
+        {
+          id: "m11-l27", kind: "exercise", title: "Exercise: Extract all numbers",
+          docs: [{ label: "re.findall", url: "https://docs.python.org/3/library/re.html#re.findall" }],
+          content: `
+<div class="lc-eyebrow">Section F · regular expressions</div>
+<h1>Pull the numbers out</h1>
+<h3>Your task</h3>
+<ul>
+  <li><code>nums</code> = all runs of digits in <code>text</code>, as strings
+      (use <code>re.findall</code> with <code>r"\\d+"</code>).</li>
+  <li><code>as_ints</code> = the same values converted to <code>int</code>.</li>
+</ul>`,
+          starter: `import re
+
+text = "Order 12: 7 apples, 99 pears"
+
+nums = []      # re.findall(r"\\d+", text)
+as_ints = []   # [int(n) for n in nums]
+
+print(nums, as_ints)`,
+          tests: [
+            { name: "nums are the digit runs as strings", code: `import re\nassert nums == re.findall(r"\\d+", text) == ["12", "7", "99"], f"Got {nums}"` },
+            { name: "as_ints are integers", code: `assert as_ints == [12, 7, 99] and all(isinstance(n, int) for n in as_ints), f"Got {as_ints}"` },
+          ],
+        },
+        {
+          id: "m11-l28", kind: "lesson", title: "Groups, named groups, sub & split",
+          docs: [
+            { label: "re.sub", url: "https://docs.python.org/3/library/re.html#re.sub" },
+            { label: "Match.group", url: "https://docs.python.org/3/library/re.html#re.Match.group" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section F · regular expressions</div>
+<h1>Capturing and replacing</h1>
+<h2>Groups</h2>
+<p>Parentheses <code>( )</code> capture part of a match. Name them with
+<code>(?P&lt;name&gt;...)</code> for readable access.</p>
+<pre><code>import re
+m = re.search(r"(?P&lt;y&gt;\\d{4})-(?P&lt;m&gt;\\d{2})", "2024-03")
+print(m.group("y"))   # '2024'
+print(m.groups())     # ('2024', '03')</code></pre>
+<h2>sub — find & replace</h2>
+<pre><code>print(re.sub(r"\\s+", " ", "a   big   gap"))  # 'a big gap'</code></pre>
+<h2>split — on a pattern</h2>
+<pre><code>print(re.split(r"[;,]\\s*", "a, b; c,d"))   # ['a', 'b', 'c', 'd']</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>re.sub(pattern, replacement, text)</code> replaces <i>every</i> match unless
+you pass <code>count=</code>.</div></div>`,
+          starter: `import re
+m = re.search(r"(?P<level>[A-Z]+) (?P<msg>.+)", "ERROR disk full")
+print(m.group("level"), "/", m.group("msg"))
+print(re.sub(r"\\d", "#", "PIN 1234"))`,
+        },
+        {
+          id: "m11-l29", kind: "exercise", title: "Exercise: Redact emails",
+          docs: [{ label: "re.sub", url: "https://docs.python.org/3/library/re.html#re.sub" }],
+          content: `
+<div class="lc-eyebrow">Section F · regular expressions</div>
+<h1>Hide the email addresses</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Replace every email in <code>text</code> with <code>[redacted]</code>, into
+      <code>clean</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+A simple pattern is <code>r"\\w+@\\w+\\.\\w+"</code>. Use
+<code>re.sub(pattern, "[redacted]", text)</code>.</div></div>`,
+          starter: `import re
+
+text = "Contact ada@x.com or bob@y.org for info."
+
+clean = text   # re.sub the emails with "[redacted]"
+
+print(clean)`,
+          tests: [
+            { name: "no @ remains", code: `assert "@" not in clean, "Every email should be replaced"` },
+            { name: "both emails became [redacted]", code: `assert clean.count("[redacted]") == 2, f"Expected 2 redactions, got {clean.count('[redacted]')}"` },
+            { name: "the rest of the text is intact", code: `assert clean == "Contact [redacted] or [redacted] for info.", f"Got {clean!r}"` },
+          ],
+        },
+        {
+          id: "m11-l30", kind: "exercise", title: "Exercise: Parse a log line",
+          docs: [{ label: "Named groups", url: "https://docs.python.org/3/library/re.html#index-17" }],
+          content: `
+<div class="lc-eyebrow">Section F · regular expressions</div>
+<h1>Extract fields with named groups</h1>
+<h3>Your task</h3>
+<p>A log line looks like <code>DATE LEVEL MESSAGE</code> (space-separated, the
+message may contain spaces). Use one <code>re.search</code> with named groups to
+set:</p>
+<ul>
+  <li><code>level</code> — the second field (e.g. <code>ERROR</code>).</li>
+  <li><code>msg</code> — everything after it.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Try <code>r"(?P&lt;date&gt;\\S+) (?P&lt;level&gt;\\S+) (?P&lt;msg&gt;.+)"</code> and read
+<code>m.group("level")</code>.</div></div>`,
+          starter: `import re
+
+line = "2024-03-09 ERROR Disk full on /dev/sda"
+
+level = ""   # the LEVEL field
+msg = ""     # the rest of the line
+
+print(level, "|", msg)`,
+          tests: [
+            { name: "level is ERROR", code: `assert level == "ERROR", f"Expected 'ERROR', got {level!r}"` },
+            { name: "msg is the trailing message", code: `assert msg == "Disk full on /dev/sda", f"Got {msg!r}"` },
+          ],
+        },
+        {
+          id: "m11-quizF", kind: "quiz", title: "Section F Check: Regex",
+          intro: "search vs match, findall, sub, named groups.",
+          questions: [
+            { q: "re.match anchors the pattern at…", options: ["the end of the string", "the start of the string", "any position", "every newline"], answer: 1, explain: "match only succeeds at the start; search looks anywhere." },
+            { q: "re.findall(r\"\\d+\", s) returns…", options: ["a match object", "a list of strings", "the first integer", "None"], answer: 1, explain: "findall returns all matches as a list of strings." },
+            { q: "Why use raw strings r'...' for patterns?", options: ["they run faster", "backslashes aren't treated as escapes", "they're shorter", "Python requires it"], answer: 1, explain: "Raw strings stop Python from eating the backslashes before regex sees them." },
+            { q: "re.sub(pattern, repl, s) does what?", options: ["finds the first match", "replaces matches with repl", "splits s", "counts matches"], answer: 1, explain: "sub substitutes every match (unless count is given)." },
+            { q: "The named-group syntax is…", options: ["(name)", "(?P<name>...)", "[name]", "{name}"], answer: 1, explain: "(?P<name>...) names a capture group." },
+            { q: "m.group('level') returns…", options: ["all groups", "the named group's matched text", "the match length", "None always"], answer: 1, explain: "group(name) returns that group's captured text." },
+          ],
+        },
+
+        /* ───────── Section G · time, paths & math ───────── */
+        {
+          id: "m11-l31", kind: "lesson", title: "datetime deep-dive",
+          docs: [{ label: "datetime", url: "https://docs.python.org/3/library/datetime.html" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Dates, times, and durations</h1>
+<pre><code>from datetime import datetime, date, timedelta
+
+d = date(2024, 3, 9)
+print(d.year, d.month, d.day)        # 2024 3 9
+print(d + timedelta(days=30))        # 2024-04-08
+
+# parse & format
+dt = datetime.strptime("2024-03-09 14:30", "%Y-%m-%d %H:%M")
+print(dt.strftime("%A %d %b"))       # 'Saturday 09 Mar'
+
+# subtracting dates gives a timedelta
+gap = date(2024, 3, 1) - date(2024, 1, 1)
+print(gap.days)                      # 60</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+Use <code>.replace(day=1)</code> to copy a date with one field changed. Subtract
+two dates to get a <code>timedelta</code>; read <code>.days</code> for the count.</div></div>`,
+          starter: `from datetime import date, timedelta
+start = date(2024, 1, 1)
+print("in 100 days:", start + timedelta(days=100))
+print("days in Q1:", (date(2024, 4, 1) - start).days)`,
+        },
+        {
+          id: "m11-l32", kind: "exercise", title: "Exercise: Days until launch",
+          docs: [{ label: "datetime.strptime", url: "https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Count the days between two dates</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Parse <code>start_s</code> and <code>launch_s</code> (both
+      <code>YYYY-MM-DD</code>).</li>
+  <li>Set <code>days</code> to the whole number of days between them.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Subtract the two parsed dates and read <code>.days</code> off the resulting
+<code>timedelta</code>.</div></div>`,
+          starter: `from datetime import datetime
+
+start_s = "2024-01-01"
+launch_s = "2024-03-01"
+
+days = 0   # whole days between start and launch
+
+print(f"{days} days to launch")`,
+          tests: [
+            { name: "days is 60", code: `assert days == 60, f"Expected 60, got {days}"` },
+            { name: "days is an int from a timedelta", code: `from datetime import datetime\nexpected = (datetime.strptime(launch_s, "%Y-%m-%d") - datetime.strptime(start_s, "%Y-%m-%d")).days\nassert isinstance(days, int) and days == expected, "Subtract the parsed dates and use .days"` },
+          ],
+        },
+        {
+          id: "m11-l33", kind: "exercise", title: "Exercise: Weekday name",
+          docs: [{ label: "strftime codes", url: "https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Which day of the week?</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Parse <code>iso</code> and set <code>day_name</code> to its full weekday name
+      (e.g. <code>"Saturday"</code>).</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>%A</code> is the full weekday name in <code>strftime</code>.</div></div>`,
+          starter: `from datetime import datetime
+
+iso = "2024-03-09"
+
+day_name = ""   # full weekday name via strftime("%A")
+
+print(day_name)`,
+          tests: [
+            { name: "day_name is 'Saturday'", code: `assert day_name == "Saturday", f"Expected 'Saturday', got {day_name!r}"` },
+            { name: "it came from parsing iso", code: `from datetime import datetime\nassert day_name == datetime.strptime(iso, "%Y-%m-%d").strftime("%A"), "Parse iso, then strftime('%A')"` },
+          ],
+        },
+        {
+          id: "m11-l34", kind: "lesson", title: "pathlib",
+          docs: [{ label: "pathlib", url: "https://docs.python.org/3/library/pathlib.html" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Paths as objects</h1>
+<p><code>pathlib.Path</code> treats file paths as smart objects. Build them with the
+<code>/</code> operator and read their parts by attribute.</p>
+<pre><code>from pathlib import PurePosixPath
+p = PurePosixPath("/home/ada/report.csv")
+print(p.name)    # 'report.csv'
+print(p.stem)    # 'report'   (name without suffix)
+print(p.suffix)  # '.csv'     (NOTE: includes the dot)
+print(p.parts)   # ('/', 'home', 'ada', 'report.csv')
+print(p.parent / "notes.txt")  # /home/ada/notes.txt</code></pre>
+<h2>Finding files</h2>
+<pre><code>from pathlib import Path
+for f in Path(".").glob("*.txt"):
+    print(f.name)</code></pre>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+<code>.suffix</code> includes the leading dot (<code>'.csv'</code>);
+<code>.stem</code> is the name with the suffix removed.</div></div>`,
+          starter: `from pathlib import PurePosixPath
+p = PurePosixPath("project/data/sales.csv")
+print("name:", p.name)
+print("stem:", p.stem)
+print("suffix:", p.suffix)`,
+        },
+        {
+          id: "m11-l35", kind: "exercise", title: "Exercise: Dissect a path",
+          docs: [{ label: "PurePath", url: "https://docs.python.org/3/library/pathlib.html#pure-paths" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Pull a path apart</h1>
+<h3>Your task</h3>
+<p>From the path object <code>p</code>, set:</p>
+<ul>
+  <li><code>name</code> — the final component.</li>
+  <li><code>stem</code> — the name without its suffix.</li>
+  <li><code>suffix</code> — the extension (with the dot).</li>
+</ul>`,
+          starter: `from pathlib import PurePosixPath
+
+p = PurePosixPath("/home/ada/report.csv")
+
+name = ""     # p.name
+stem = ""     # p.stem
+suffix = ""   # p.suffix
+
+print(name, stem, suffix)`,
+          tests: [
+            { name: "name is 'report.csv'", code: `assert name == "report.csv", f"Got {name!r}"` },
+            { name: "stem is 'report'", code: `assert stem == "report", f"Got {stem!r}"` },
+            { name: "suffix is '.csv' (with the dot)", code: `assert suffix == ".csv", f"Got {suffix!r}"` },
+          ],
+        },
+        {
+          id: "m11-l36", kind: "exercise", title: "Exercise: List files by suffix",
+          docs: [{ label: "Path.glob", url: "https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Find the .txt files</h1>
+<p>A scratch folder has been created for you and three files written into it. Use
+<code>glob</code> to find just the text files.</p>
+<h3>Your task</h3>
+<ul>
+  <li>Set <code>txt_stems</code> = the <b>sorted</b> list of stems (names without
+      suffix) of every <code>*.txt</code> file in <code>folder</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>sorted(p.stem for p in folder.glob("*.txt"))</code>.</div></div>`,
+          starter: `import tempfile
+from pathlib import Path
+
+folder = Path(tempfile.mkdtemp())
+for fname in ["alpha.txt", "beta.txt", "notes.log"]:
+    (folder / fname).write_text("hello")
+
+txt_stems = []   # sorted stems of the *.txt files
+
+print(txt_stems)`,
+          tests: [
+            { name: "found both .txt files by stem", code: `assert txt_stems == ["alpha", "beta"], f"Got {txt_stems}"` },
+            { name: "the .log file was excluded", code: `assert "notes" not in txt_stems, "Glob *.txt should skip the .log file"` },
+          ],
+        },
+        {
+          id: "m11-l37", kind: "lesson", title: "math, random & statistics",
+          docs: [
+            { label: "math", url: "https://docs.python.org/3/library/math.html" },
+            { label: "statistics", url: "https://docs.python.org/3/library/statistics.html" },
+          ],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>Numbers, chance, and summaries</h1>
+<pre><code>import math, random, statistics
+
+print(math.isclose(0.1 + 0.2, 0.3))  # True — never use == on floats
+print(math.comb(5, 2))               # 10 — combinations count
+print(math.prod([1, 2, 3, 4]))       # 24
+
+random.seed(42)                       # reproducible "randomness"
+print(random.sample(range(10), 3))    # 3 distinct items
+print(random.choices("ABC", k=4))     # 4 picks, with repeats
+
+print(statistics.mean([2, 4, 6]))     # 4
+print(statistics.median([1, 2, 3, 4]))# 2.5</code></pre>
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Seed the generator (<code>random.seed(n)</code>) whenever you need the same
+"random" result every run — like in tests.</div></div>`,
+          starter: `import math, statistics
+print("isclose:", math.isclose(0.1 + 0.2, 0.3))
+print("mean:", statistics.mean([10, 20, 30]))
+print("median:", statistics.median([3, 1, 2, 4]))`,
+        },
+        {
+          id: "m11-l38", kind: "exercise", title: "Exercise: Lottery draw (seeded)",
+          docs: [{ label: "random.sample", url: "https://docs.python.org/3/library/random.html#random.sample" }],
+          content: `
+<div class="lc-eyebrow">Section G · time, paths & math</div>
+<h1>A reproducible draw</h1>
+<h3>Your task</h3>
+<ul>
+  <li>Keep <code>random.seed(7)</code>.</li>
+  <li>Draw <b>6</b> distinct numbers from <code>1..49</code> with
+      <code>random.sample</code>, then store them <b>sorted</b> in
+      <code>draw</code>.</li>
+</ul>
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+The seed makes the draw identical every run, so the check can verify it.</div></div>`,
+          starter: `import random
+
+random.seed(7)
+
+draw = []   # sorted(random.sample(range(1, 50), 6))
+
+print(draw)`,
+          tests: [
+            { name: "draw matches the seeded sample", code: `import random\nrandom.seed(7)\nassert draw == sorted(random.sample(range(1, 50), 6)), "Seed 7, sample 6 from 1..49, sorted"` },
+            { name: "six distinct numbers in range", code: `assert len(draw) == 6 and len(set(draw)) == 6 and all(1 <= n <= 49 for n in draw), f"Got {draw}"` },
+          ],
+        },
+        {
+          id: "m11-quizG", kind: "quiz", title: "Section G Check: Time, Paths & Math",
+          intro: "datetime, pathlib, and seeded randomness.",
+          questions: [
+            { q: "strptime is for…", options: ["formatting a datetime to text", "parsing text into a datetime", "time zones", "sleeping"], answer: 1, explain: "strptime parses; strftime formats." },
+            { q: "(date2 - date1) gives…", options: ["an int", "a timedelta", "a string", "seconds"], answer: 1, explain: "Subtracting dates yields a timedelta; read .days." },
+            { q: "PurePosixPath('a/b.txt').suffix is…", options: ["'b'", "'.txt'", "'txt'", "'b.txt'"], answer: 1, explain: "suffix includes the leading dot." },
+            { q: "PurePosixPath('a/b.txt').stem is…", options: ["'b'", "'b.txt'", "'.txt'", "'a'"], answer: 0, explain: "stem is the name without the suffix." },
+            { q: "Why call random.seed(n) before sampling?", options: ["it's faster", "it makes results reproducible", "it's more random", "Python requires it"], answer: 1, explain: "Seeding fixes the sequence so runs match." },
+            { q: "statistics.median([1, 2, 3, 4]) is…", options: ["2", "2.5", "3", "4"], answer: 1, explain: "With an even count it's the average of the two middle values." },
           ],
         },
       ],
