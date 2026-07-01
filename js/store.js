@@ -8,6 +8,10 @@
   const LEGACY_KEY = "pythoneer.state.v1";
   let activeKey = LEGACY_KEY;
 
+  // Two clean encounters with a concept after a miss "graduate" it out of the
+  // weak-concepts list (spaced-repetition style). Tunable.
+  const MASTERY_STREAK = 2;
+
   const defaults = () => ({
     theme: "green",
     name: "Learner",
@@ -17,6 +21,10 @@
     lastActive: null,     // ISO date string (yyyy-mm-dd)
     streak: 0,
     bestStreak: 0,
+    missed: { quizzes: {}, exercises: {} }, // quizzes: { quizId: [qi,...] }, exercises: { exId: true }
+    // Per-concept retention history. `misses` is a permanent lifetime count;
+    // `weak` graduates to false after MASTERY_STREAK clean encounters.
+    tagStats: {},         // { slug: { misses, streak, weak, lastMiss, lastSeen } }
   });
 
   function loadFrom(key) {
@@ -68,6 +76,66 @@
     },
     unmark(id) { delete state.completed[id]; save(); },
 
+    /* ---- review & retention: quiz questions / exercises the learner missed ---- */
+
+    recordQuizMiss(quizId, qi) {
+      const arr = state.missed.quizzes[quizId] || (state.missed.quizzes[quizId] = []);
+      if (!arr.includes(qi)) { arr.push(qi); save(); }
+    },
+    clearQuizMiss(quizId, qi) {
+      const arr = state.missed.quizzes[quizId];
+      if (!arr) return;
+      const i = arr.indexOf(qi);
+      if (i === -1) return;
+      arr.splice(i, 1);
+      if (arr.length === 0) delete state.missed.quizzes[quizId];
+      save();
+    },
+    quizMisses: (quizId) => state.missed.quizzes[quizId] || [],
+    missedQuizIds: () => Object.keys(state.missed.quizzes),
+
+    recordExerciseMiss(id) {
+      if (!state.missed.exercises[id]) { state.missed.exercises[id] = true; save(); }
+    },
+    clearExerciseMiss(id) {
+      if (state.missed.exercises[id]) { delete state.missed.exercises[id]; save(); }
+    },
+    missedExerciseIds: () => Object.keys(state.missed.exercises),
+
+    /* ---- concept-level retention: persistent per-tag struggle history ---- */
+
+    // Feed a graded result (from a quiz question or exercise) into every concept
+    // tag it carries. A miss flags the concept weak and resets progress; a clean
+    // hit chips away at the streak until the concept graduates. `misses` is never
+    // reset, so the history survives correction.
+    recordTagResult(tags, ok) {
+      if (!Array.isArray(tags) || tags.length === 0) return;
+      const t = today();
+      tags.forEach((slug) => {
+        if (!slug) return;
+        const s = state.tagStats[slug] ||
+          (state.tagStats[slug] = { misses: 0, streak: 0, weak: false, lastMiss: null, lastSeen: null });
+        s.lastSeen = t;
+        if (!ok) {
+          s.misses++; s.streak = 0; s.weak = true; s.lastMiss = t;
+        } else if (s.weak) {
+          s.streak++;
+          if (s.streak >= MASTERY_STREAK) { s.weak = false; s.streak = 0; }
+        }
+      });
+      save();
+    },
+    weakTags() {
+      return Object.keys(state.tagStats)
+        .filter((slug) => state.tagStats[slug].weak)
+        .sort((a, b) => {
+          const A = state.tagStats[a], B = state.tagStats[b];
+          if (B.misses !== A.misses) return B.misses - A.misses;
+          return (B.lastMiss || "").localeCompare(A.lastMiss || "");
+        });
+    },
+    tagStat: (slug) => state.tagStats[slug] || null,
+
     saveCode(id, src) { state.code[id] = src; save(); },
     getCode(id) { return state.code[id]; },
 
@@ -114,6 +182,32 @@
       if (!remote || typeof remote !== "object") return;
       state.completed = Object.assign({}, remote.completed || {}, state.completed || {});
       state.code = Object.assign({}, remote.code || {}, state.code || {});
+      const remoteMissed = remote.missed || { quizzes: {}, exercises: {} };
+      const localMissed = state.missed || { quizzes: {}, exercises: {} };
+      const quizzes = {};
+      new Set([...Object.keys(remoteMissed.quizzes || {}), ...Object.keys(localMissed.quizzes || {})]).forEach((id) => {
+        quizzes[id] = Array.from(new Set([...(remoteMissed.quizzes[id] || []), ...(localMissed.quizzes[id] || [])]));
+      });
+      state.missed = {
+        quizzes,
+        exercises: Object.assign({}, remoteMissed.exercises || {}, localMissed.exercises || {}),
+      };
+      // Union per-concept retention: keep the worst-case struggle record so
+      // cloud sync never erases what a device knew a learner missed.
+      const remoteTags = remote.tagStats || {};
+      const localTags = state.tagStats || {};
+      const mergedTags = {};
+      new Set([...Object.keys(remoteTags), ...Object.keys(localTags)]).forEach((slug) => {
+        const r = remoteTags[slug] || {}, l = localTags[slug] || {};
+        mergedTags[slug] = {
+          misses: Math.max(r.misses || 0, l.misses || 0),
+          streak: Math.min(r.streak != null ? r.streak : Infinity, l.streak != null ? l.streak : Infinity) || 0,
+          weak: !!(r.weak || l.weak),
+          lastMiss: [r.lastMiss, l.lastMiss].filter(Boolean).sort().pop() || null,
+          lastSeen: [r.lastSeen, l.lastSeen].filter(Boolean).sort().pop() || null,
+        };
+      });
+      state.tagStats = mergedTags;
       state.runs = Math.max(state.runs || 0, remote.runs || 0);
       state.streak = Math.max(state.streak || 0, remote.streak || 0);
       state.bestStreak = Math.max(state.bestStreak || 0, remote.bestStreak || 0);

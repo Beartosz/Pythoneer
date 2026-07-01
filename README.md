@@ -15,12 +15,18 @@ powered by [Pyodide](https://pyodide.org) (CPython compiled to WebAssembly).
   runaway loop is stopped automatically after 12 seconds.
 - **Auto-checked exercises** — each exercise is graded by real Python assertions
   and tells you exactly which checks pass or fail.
-- **Step-by-step curriculum** — **10 core modules**, beginner to advanced, each
+- **Step-by-step curriculum** — **11 core modules**, beginner to advanced, each
   ending in a multiple-choice **knowledge-check quiz**:
   1. First Steps · 2. Numbers, Strings & Input · 3. Decisions & Loops ·
   4. Collections · 5. Functions & Scope · 6. Object-Oriented Python ·
   7. Files & Exceptions · 8. The Standard Library · 9. Comprehensions &
-  Generators · 10. Pro Toolkit
+  Generators · 10. Pro Toolkit · 11. Standard Library & Method Mastery
+- **Review & retention** — every exercise and quiz question is tagged by
+  **concept**, so a mistake is remembered on a dedicated **Review** page *even
+  after you fix it*. Weak concepts stay flagged until you re-prove them, and the
+  page recommends fresh practice exercises plus a **concept micro-test** assembled
+  from questions across the whole course that target exactly what you've been
+  missing.
 - **Framework tracks** — pick what you care about: **Flask, Django, FastAPI,
   pandas, NumPy, Matplotlib, Requests, pytest, Streamlit**. Most run for real in
   the browser (see *How code runs*).
@@ -84,9 +90,6 @@ your project URL + publishable key into the `CONFIG` block.
 Login is by **name + password**. The seeded **admin** account can open
 **Settings → User management** (also a sidebar **Users** entry) to create and
 delete accounts and view the name/password list — there is no self-signup.
-Passwords are stored in plaintext so the admin can share them, which is fine for a
-small private/educational deployment but not production-grade; for wider use, switch
-to hashed passwords and an admin *reset* (rather than view) flow.
 
 ## Project layout
 
@@ -143,8 +146,9 @@ only packages available in Pyodide (or the built-in `requests` / `fastapi` shims
 
 ## Status
 
-The full app and all content are in place: 10 core modules (with quizzes and 30+
+The full app and all content are in place: 11 core modules (with quizzes and 30+
 auto-checked exercises), 9 framework tracks, and 4 capstone projects — all running
-in-browser via Pyodide. The **Django**, **Streamlit**, and **pytest** tracks are
-intentionally concept-only (they need a full project, their own server, or a
-terminal), teaching real code and drilling the underlying logic.
+in-browser via Pyodide, plus a Review page for revisiting missed quiz questions and
+exercises. The **Django**, **Streamlit**, and **pytest** tracks are intentionally
+concept-only (they need a full project, their own server, or a terminal), teaching
+real code and drilling the underlying logic.

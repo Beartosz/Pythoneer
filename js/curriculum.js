@@ -11,11 +11,53 @@
 
    Quiz schema:
      { id, kind:"quiz", title, intro, questions:[
-         { q, options:[...], answer:<index>, explain }
+         { q, options:[...], answer:<index>, explain, tags:[...] }
      ] }
+
+   Concept tags: exercises and quiz questions carry `tags: ["slug", ...]` drawn
+   from CURRICULUM.concepts below. They drive the Review page's retention model —
+   a miss on any tagged item flags that concept until the learner re-demonstrates
+   it. Use only slugs defined in `concepts`; keep each slug on ≥2 items so there's
+   always practice to recommend.
    ════════════════════════════════════════════════════════════════ */
 window.CURRICULUM = {
   level: "Beginner → Advanced",
+  // Canonical concept vocabulary (slug → human label) for the retention model.
+  concepts: {
+    "output-basics": "Output & f-strings",
+    "variables": "Variables",
+    "numbers-math": "Numbers & math",
+    "strings": "Strings & slicing",
+    "string-methods": "String methods",
+    "input-conversion": "Input & type conversion",
+    "booleans-logic": "Booleans & logic",
+    "conditionals": "Conditionals",
+    "loops": "Loops",
+    "lists": "Lists",
+    "tuples": "Tuples",
+    "dicts": "Dictionaries",
+    "sets": "Sets",
+    "functions": "Functions",
+    "scope": "Scope",
+    "args-kwargs": "Arguments & defaults",
+    "lambda-hof": "Lambdas & higher-order functions",
+    "classes-oop": "Classes & objects",
+    "inheritance": "Inheritance",
+    "dunder-methods": "Dunder methods",
+    "files-io": "Files & I/O",
+    "exceptions": "Exceptions",
+    "modules-imports": "Modules & imports",
+    "datetime": "Dates & times",
+    "collections-module": "collections module",
+    "regex": "Regular expressions",
+    "comprehensions": "Comprehensions",
+    "generators-iterators": "Generators & iterators",
+    "decorators": "Decorators",
+    "typing": "Type hints",
+    "itertools": "itertools",
+    "sorting": "Sorting",
+    "testing": "Testing & assertions",
+  },
   modules: [
     /* ═══════════════ MODULE 01 ═══════════════ */
     {
@@ -109,6 +151,7 @@ print(f"That was {2024 - year} years before 2024.")`,
         },
         {
           id: "m01-l04", kind: "exercise", title: "Exercise: Introduce yourself",
+          tags: ["output-basics", "variables"],
           content: `
 <div class="lc-eyebrow">Exercise · First Steps</div>
 <h1>Introduce yourself</h1>
@@ -136,6 +179,7 @@ print(f"Hi, I'm {name} and I love {hobby}.")`,
         },
         {
           id: "m01-l05", kind: "exercise", title: "Exercise: Tiny story",
+          tags: ["output-basics", "variables"],
           content: `
 <div class="lc-eyebrow">Exercise · First Steps</div>
 <h1>Build a tiny story</h1>
@@ -165,6 +209,7 @@ item = "lantern"
         },
         {
           id: "m01-l06", kind: "exercise", title: "Exercise: Business card",
+          tags: ["output-basics", "variables"],
           docs: [
             { label: "print()", url: "https://docs.python.org/3/library/functions.html#print" },
             { label: "f-strings", url: "https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals" },
@@ -194,11 +239,11 @@ company = "Analytical Engines"
           id: "m01-quiz", kind: "quiz", title: "Module 1 Check: First Steps",
           intro: "A quick five-question check on printing, variables, and f-strings. Score 80% or more to mark it complete.",
           questions: [
-            { q: "Which line displays a message on the screen?", options: ["show(\"hi\")", "print(\"hi\")", "echo \"hi\"", "display(\"hi\")"], answer: 1, explain: "print() is Python's built-in for writing output." },
-            { q: "What is a value like \"Ada\" (text in quotes) called?", options: ["A number", "A string", "A variable", "A function"], answer: 1, explain: "Text in quotes is a string." },
-            { q: "What does the = operator do in `score = 10`?", options: ["Compares score to 10", "Tests equality", "Assigns 10 to score", "Prints score"], answer: 2, explain: "A single = assigns the right-hand value to the name on the left." },
-            { q: "Which is a correctly written f-string?", options: ["f\"Hi {name}\"", "\"Hi {name}\"", "f\"Hi name\"", "\"Hi\" + {name}"], answer: 0, explain: "An f-string starts with f and puts variables inside { }." },
-            { q: "After `x = 5` then `x = x + 3`, what is x?", options: ["5", "3", "8", "53"], answer: 2, explain: "x becomes its old value (5) plus 3 = 8." },
+            { q: "Which line displays a message on the screen?", options: ["show(\"hi\")", "print(\"hi\")", "echo \"hi\"", "display(\"hi\")"], answer: 1, explain: "print() is Python's built-in for writing output." , tags: ["output-basics"] },
+            { q: "What is a value like \"Ada\" (text in quotes) called?", options: ["A number", "A string", "A variable", "A function"], answer: 1, explain: "Text in quotes is a string." , tags: ["strings"] },
+            { q: "What does the = operator do in `score = 10`?", options: ["Compares score to 10", "Tests equality", "Assigns 10 to score", "Prints score"], answer: 2, explain: "A single = assigns the right-hand value to the name on the left." , tags: ["variables"] },
+            { q: "Which is a correctly written f-string?", options: ["f\"Hi {name}\"", "\"Hi {name}\"", "f\"Hi name\"", "\"Hi\" + {name}"], answer: 0, explain: "An f-string starts with f and puts variables inside { }." , tags: ["output-basics"] },
+            { q: "After `x = 5` then `x = x + 3`, what is x?", options: ["5", "3", "8", "53"], answer: 2, explain: "x becomes its old value (5) plus 3 = 8." , tags: ["variables"] },
           ],
         },
       ],
@@ -338,6 +383,7 @@ print(f"{n} squared is {n ** 2}")`,
         },
         {
           id: "m02-l05", kind: "exercise", title: "Exercise: Tip calculator",
+          tags: ["numbers-math", "output-basics"],
           content: `
 <div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
 <h1>Build a tip calculator</h1>
@@ -367,6 +413,7 @@ print(f"Tip: {tip:.2f} | Total: {total:.2f}")`,
         },
         {
           id: "m02-l06", kind: "exercise", title: "Exercise: Celsius to Fahrenheit",
+          tags: ["numbers-math"],
           content: `
 <div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
 <h1>Temperature converter</h1>
@@ -389,6 +436,7 @@ print(f"{celsius}°C = {fahrenheit}°F")`,
         },
         {
           id: "m02-l07", kind: "exercise", title: "Exercise: Email parts",
+          tags: ["string-methods", "strings"],
           content: `
 <div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
 <h1>Pull an email apart</h1>
@@ -420,6 +468,7 @@ print(f"User: {username} | Provider: {provider.title()}")`,
         },
         {
           id: "m02-l08", kind: "exercise", title: "Exercise: Split the bill",
+          tags: ["numbers-math"],
           docs: [
             { label: "Numeric types & arithmetic", url: "https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex" },
             { label: "Format spec (:.2f)", url: "https://docs.python.org/3/library/string.html#format-specification-mini-language" },
@@ -488,6 +537,7 @@ print("first 'ss' at index", s.find("ss"))`,
         },
         {
           id: "m02-l10", kind: "exercise", title: "Exercise: Clean the CSV field",
+          tags: ["string-methods"],
           docs: [{ label: "str.strip()", url: "https://docs.python.org/3/library/stdtypes.html#str.strip" }],
           content: `
 <div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
@@ -552,6 +602,7 @@ print(f"{'Total':<10}{'$42.00':>8}")`,
         },
         {
           id: "m02-l12", kind: "exercise", title: "Exercise: Format an invoice ID",
+          tags: ["output-basics", "strings"],
           docs: [{ label: "str.zfill()", url: "https://docs.python.org/3/library/stdtypes.html#str.zfill" }],
           content: `
 <div class="lc-eyebrow">Exercise · Numbers, Strings & Input</div>
@@ -583,6 +634,7 @@ print(line)`,
         },
         {
           id: "m02-l13", kind: "exercise", title: "Exercise: Shout the vowels",
+          tags: ["string-methods", "strings"],
           docs: [
             { label: "str.maketrans()", url: "https://docs.python.org/3/library/stdtypes.html#str.maketrans" },
             { label: "str.translate()", url: "https://docs.python.org/3/library/stdtypes.html#str.translate" },
@@ -620,12 +672,12 @@ print(shouted)`,
           id: "m02-quiz", kind: "quiz", title: "Module 2 Check: Numbers & Strings",
           intro: "Test your grip on arithmetic, formatting, strings, and input.",
           questions: [
-            { q: "What does 7 % 3 evaluate to?", options: ["2", "1", "2.33", "21"], answer: 1, explain: "% is the remainder: 7 = 2×3 + 1, so the remainder is 1." },
-            { q: "What is the result of 7 / 2 in Python 3?", options: ["3", "3.5", "4", "1"], answer: 1, explain: "A single / always produces a float; use // for floor division." },
-            { q: "How do you format the number 5 as '5.00'?", options: ["f\"{5:2f}\"", "f\"{5:.2f}\"", "f\"{5:,2}\"", "round(5, 2)"], answer: 1, explain: ":.2f means fixed-point with two decimals." },
-            { q: "For word = \"Python\", what is word[-1]?", options: ["P", "n", "Python", "o"], answer: 1, explain: "Index -1 is the last character." },
-            { q: "What type does input() always return?", options: ["int", "float", "str", "It depends on what's typed"], answer: 2, explain: "input() always returns a string; convert with int()/float()." },
-            { q: "What is word[1:4] for word = \"Python\"?", options: ["Pyt", "yth", "ytho", "tho"], answer: 1, explain: "Slices are half-open: positions 1,2,3 → 'yth'." },
+            { q: "What does 7 % 3 evaluate to?", options: ["2", "1", "2.33", "21"], answer: 1, explain: "% is the remainder: 7 = 2×3 + 1, so the remainder is 1." , tags: ["numbers-math"] },
+            { q: "What is the result of 7 / 2 in Python 3?", options: ["3", "3.5", "4", "1"], answer: 1, explain: "A single / always produces a float; use // for floor division." , tags: ["numbers-math"] },
+            { q: "How do you format the number 5 as '5.00'?", options: ["f\"{5:2f}\"", "f\"{5:.2f}\"", "f\"{5:,2}\"", "round(5, 2)"], answer: 1, explain: ":.2f means fixed-point with two decimals." , tags: ["output-basics"] },
+            { q: "For word = \"Python\", what is word[-1]?", options: ["P", "n", "Python", "o"], answer: 1, explain: "Index -1 is the last character." , tags: ["strings"] },
+            { q: "What type does input() always return?", options: ["int", "float", "str", "It depends on what's typed"], answer: 2, explain: "input() always returns a string; convert with int()/float()." , tags: ["input-conversion"] },
+            { q: "What is word[1:4] for word = \"Python\"?", options: ["Pyt", "yth", "ytho", "tho"], answer: 1, explain: "Slices are half-open: positions 1,2,3 → 'yth'." , tags: ["strings"] },
           ],
         },
       ],
@@ -767,6 +819,7 @@ print(f"Reached {value} after {steps} doublings")`,
         },
         {
           id: "m03-l05", kind: "exercise", title: "Exercise: FizzBuzz",
+          tags: ["conditionals", "loops"],
           content: `
 <div class="lc-eyebrow">Exercise · Decisions & Repeating</div>
 <h1>FizzBuzz — the classic</h1>
@@ -796,6 +849,7 @@ divisibility.</div></div>`,
         },
         {
           id: "m03-l06", kind: "exercise", title: "Exercise: Sum the even numbers",
+          tags: ["loops", "numbers-math"],
           content: `
 <div class="lc-eyebrow">Exercise · Decisions & Repeating</div>
 <h1>Sum of evens</h1>
@@ -819,6 +873,7 @@ print(f"Total: {total}")`,
         },
         {
           id: "m03-l07", kind: "exercise", title: "Exercise: Leap year",
+          tags: ["conditionals", "booleans-logic"],
           content: `
 <div class="lc-eyebrow">Exercise · Decisions & Repeating</div>
 <h1>Is it a leap year?</h1>
@@ -844,6 +899,7 @@ print(f"{year} leap year? {is_leap}")`,
         },
         {
           id: "m03-l08", kind: "exercise", title: "Exercise: Make initials",
+          tags: ["loops", "strings"],
           content: `
 <div class="lc-eyebrow">Exercise · Decisions & Repeating</div>
 <h1>Initials from a full name</h1>
@@ -873,6 +929,7 @@ print(initials)`,
         },
         {
           id: "m03-l09", kind: "exercise", title: "Exercise: Savings goal",
+          tags: ["loops", "numbers-math"],
           docs: [
             { label: "while statement", url: "https://docs.python.org/3/reference/compound_stmts.html#the-while-statement" },
             { label: "Numeric operators", url: "https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex" },
@@ -905,12 +962,12 @@ print(f"It takes {months} months to save {goal}.")`,
           id: "m03-quiz", kind: "quiz", title: "Module 3 Check: Decisions & Loops",
           intro: "Booleans, branching, and loops.",
           questions: [
-            { q: "Which operator tests equality (not assignment)?", options: ["=", "==", ":=", "==="], answer: 1, explain: "== compares; a single = assigns." },
-            { q: "What does range(1, 6) produce?", options: ["1,2,3,4,5,6", "1,2,3,4,5", "0,1,2,3,4,5", "1,6"], answer: 1, explain: "range stops BEFORE the second number, so 1..5." },
-            { q: "In if/elif/else, how many branches run for a given input?", options: ["All that are true", "At most one", "Exactly two", "None"], answer: 1, explain: "Python runs the first true branch and skips the rest." },
-            { q: "What does `continue` do inside a loop?", options: ["Exits the loop", "Skips to the next iteration", "Restarts the program", "Pauses the loop"], answer: 1, explain: "continue jumps straight to the next iteration; break exits." },
-            { q: "Which condition is True when n is even?", options: ["n % 2 == 1", "n / 2 == 0", "n % 2 == 0", "n // 2 == 0"], answer: 2, explain: "Even numbers have remainder 0 when divided by 2." },
-            { q: "What kind of loop is best when you don't know how many repeats you'll need?", options: ["for", "while", "range", "if"], answer: 1, explain: "while loops run until a condition becomes false." },
+            { q: "Which operator tests equality (not assignment)?", options: ["=", "==", ":=", "==="], answer: 1, explain: "== compares; a single = assigns." , tags: ["booleans-logic"] },
+            { q: "What does range(1, 6) produce?", options: ["1,2,3,4,5,6", "1,2,3,4,5", "0,1,2,3,4,5", "1,6"], answer: 1, explain: "range stops BEFORE the second number, so 1..5." , tags: ["loops"] },
+            { q: "In if/elif/else, how many branches run for a given input?", options: ["All that are true", "At most one", "Exactly two", "None"], answer: 1, explain: "Python runs the first true branch and skips the rest." , tags: ["conditionals"] },
+            { q: "What does `continue` do inside a loop?", options: ["Exits the loop", "Skips to the next iteration", "Restarts the program", "Pauses the loop"], answer: 1, explain: "continue jumps straight to the next iteration; break exits." , tags: ["loops"] },
+            { q: "Which condition is True when n is even?", options: ["n % 2 == 1", "n / 2 == 0", "n % 2 == 0", "n // 2 == 0"], answer: 2, explain: "Even numbers have remainder 0 when divided by 2." , tags: ["booleans-logic", "numbers-math"] },
+            { q: "What kind of loop is best when you don't know how many repeats you'll need?", options: ["for", "while", "range", "if"], answer: 1, explain: "while loops run until a condition becomes false." , tags: ["loops"] },
           ],
         },
       ],
@@ -1025,6 +1082,7 @@ print(f"Latitude {lat}, longitude {lon}")`,
         },
         {
           id: "m04-l04", kind: "exercise", title: "Exercise: Count the words",
+          tags: ["dicts", "string-methods"],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
 <h1>Count word frequencies</h1>
@@ -1054,6 +1112,7 @@ print(counts)`,
         },
         {
           id: "m04-l05", kind: "exercise", title: "Exercise: De-duplicate & sort",
+          tags: ["sets", "sorting"],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
 <h1>Unique, sorted values</h1>
@@ -1079,6 +1138,7 @@ print(unique_sorted)`,
         },
         {
           id: "m04-l06", kind: "exercise", title: "Exercise: Top scorer",
+          tags: ["dicts"],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
 <h1>Find the highest scorer</h1>
@@ -1104,6 +1164,7 @@ print(f"Winner: {winner} with {scores[winner]} points")`,
         },
         {
           id: "m04-l07", kind: "exercise", title: "Exercise: Low-stock report",
+          tags: ["dicts", "loops"],
           docs: [
             { label: "Dictionaries (.items())", url: "https://docs.python.org/3/tutorial/datastructures.html#dictionaries" },
             { label: "Lists (.append())", url: "https://docs.python.org/3/tutorial/datastructures.html#more-on-lists" },
@@ -1171,6 +1232,7 @@ print("waiting:", queue)`,
         },
         {
           id: "m04-l09", kind: "exercise", title: "Exercise: Playlist editor",
+          tags: ["lists"],
           docs: [{ label: "list.pop()", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
@@ -1239,6 +1301,7 @@ for name, pts in ranked:
         },
         {
           id: "m04-l11", kind: "exercise", title: "Exercise: Leaderboard by score then name",
+          tags: ["sorting", "lists", "tuples"],
           docs: [{ label: "sorted(key=...)", url: "https://docs.python.org/3/library/functions.html#sorted" }],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
@@ -1306,6 +1369,7 @@ print(prefs)`,
         },
         {
           id: "m04-l13", kind: "exercise", title: "Exercise: Merge user settings",
+          tags: ["dicts"],
           docs: [{ label: "Dict merge |", url: "https://docs.python.org/3/library/stdtypes.html#dict" }],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
@@ -1335,6 +1399,7 @@ print(settings)`,
         },
         {
           id: "m04-l14", kind: "exercise", title: "Exercise: Set algebra on skills",
+          tags: ["sets"],
           docs: [{ label: "Set operations", url: "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" }],
           content: `
 <div class="lc-eyebrow">Exercise · Collections</div>
@@ -1374,12 +1439,12 @@ print(both, either, only_alice, exclusive)`,
           id: "m04-quiz", kind: "quiz", title: "Module 4 Check: Collections",
           intro: "Lists, dicts, tuples, and sets.",
           questions: [
-            { q: "Which collection is ordered and editable?", options: ["tuple", "set", "list", "frozenset"], answer: 2, explain: "Lists are ordered and mutable." },
-            { q: "How do you add 'x' to the end of a list called items?", options: ["items.add('x')", "items.append('x')", "items + 'x'", "items.push('x')"], answer: 1, explain: "Lists use .append(); .add() is for sets." },
-            { q: "What does set([1,2,2,3]) give?", options: ["[1,2,2,3]", "{1,2,3}", "(1,2,3)", "{1,2,2,3}"], answer: 1, explain: "Sets keep only unique values." },
-            { q: "Which collection can't be changed after creation?", options: ["list", "dict", "tuple", "set"], answer: 2, explain: "Tuples are immutable." },
-            { q: "How do you safely read a missing key from dict d?", options: ["d['x']", "d.get('x', default)", "d.find('x')", "d->x"], answer: 1, explain: ".get(key, default) returns the default instead of raising KeyError." },
-            { q: "What does person.items() yield in a for loop?", options: ["keys only", "values only", "key/value pairs", "the length"], answer: 2, explain: ".items() yields (key, value) tuples." },
+            { q: "Which collection is ordered and editable?", options: ["tuple", "set", "list", "frozenset"], answer: 2, explain: "Lists are ordered and mutable." , tags: ["lists"] },
+            { q: "How do you add 'x' to the end of a list called items?", options: ["items.add('x')", "items.append('x')", "items + 'x'", "items.push('x')"], answer: 1, explain: "Lists use .append(); .add() is for sets." , tags: ["lists"] },
+            { q: "What does set([1,2,2,3]) give?", options: ["[1,2,2,3]", "{1,2,3}", "(1,2,3)", "{1,2,2,3}"], answer: 1, explain: "Sets keep only unique values." , tags: ["sets"] },
+            { q: "Which collection can't be changed after creation?", options: ["list", "dict", "tuple", "set"], answer: 2, explain: "Tuples are immutable." , tags: ["tuples"] },
+            { q: "How do you safely read a missing key from dict d?", options: ["d['x']", "d.get('x', default)", "d.find('x')", "d->x"], answer: 1, explain: ".get(key, default) returns the default instead of raising KeyError." , tags: ["dicts"] },
+            { q: "What does person.items() yield in a for loop?", options: ["keys only", "values only", "key/value pairs", "the length"], answer: 2, explain: ".items() yields (key, value) tuples." , tags: ["dicts"] },
           ],
         },
       ],
@@ -1572,6 +1637,7 @@ cheer("Pythoneers")`,
         },
         {
           id: "m05-l06", kind: "exercise", title: "Exercise: Write is_palindrome",
+          tags: ["functions", "strings"],
           content: `
 <div class="lc-eyebrow">Exercise · Functions & Scope</div>
 <h1>Define a function</h1>
@@ -1599,6 +1665,7 @@ print(is_palindrome("python"))    # False`,
         },
         {
           id: "m05-l07", kind: "exercise", title: "Exercise: apply_twice",
+          tags: ["functions", "lambda-hof"],
           content: `
 <div class="lc-eyebrow">Exercise · Functions & Scope</div>
 <h1>Functions as arguments</h1>
@@ -1625,6 +1692,7 @@ print(apply_twice(add_three, 10))   # 16`,
         },
         {
           id: "m05-l08", kind: "exercise", title: "Exercise: Price with discount & tax",
+          tags: ["functions", "numbers-math"],
           docs: [
             { label: "Defining functions", url: "https://docs.python.org/3/tutorial/controlflow.html#defining-functions" },
             { label: "Default argument values", url: "https://docs.python.org/3/tutorial/controlflow.html#default-argument-values" },
@@ -1659,12 +1727,12 @@ print(final_price(50, 0.0, 0.0))   # 50.0`,
           id: "m05-quiz", kind: "quiz", title: "Module 5 Check: Functions",
           intro: "Defining and using functions, arguments, scope, and closures.",
           questions: [
-            { q: "What keyword defines a function?", options: ["function", "def", "fun", "define"], answer: 1, explain: "Python uses def." },
-            { q: "What does `return` do?", options: ["Prints a value", "Sends a value back to the caller", "Ends the program", "Loops"], answer: 1, explain: "return hands a value back; print only displays." },
-            { q: "In `def f(a, b=2)`, what is b?", options: ["Required", "A default argument", "A keyword-only argument", "Invalid syntax"], answer: 1, explain: "b has a default value, so callers may omit it." },
-            { q: "What does *args collect?", options: ["Extra keyword arguments into a dict", "Extra positional arguments into a tuple", "Nothing", "Only strings"], answer: 1, explain: "*args gathers extra positional args as a tuple; **kwargs gathers keyword args as a dict." },
-            { q: "A variable assigned inside a function is by default…", options: ["Global", "Local to that function", "A constant", "Shared with the caller"], answer: 1, explain: "Assignment inside a function creates a local name (the L in LEGB)." },
-            { q: "What does the @ symbol above a function apply?", options: ["A comment", "A decorator", "A type hint", "A loop"], answer: 1, explain: "@name applies a decorator that wraps the function." },
+            { q: "What keyword defines a function?", options: ["function", "def", "fun", "define"], answer: 1, explain: "Python uses def." , tags: ["functions"] },
+            { q: "What does `return` do?", options: ["Prints a value", "Sends a value back to the caller", "Ends the program", "Loops"], answer: 1, explain: "return hands a value back; print only displays." , tags: ["functions"] },
+            { q: "In `def f(a, b=2)`, what is b?", options: ["Required", "A default argument", "A keyword-only argument", "Invalid syntax"], answer: 1, explain: "b has a default value, so callers may omit it." , tags: ["args-kwargs"] },
+            { q: "What does *args collect?", options: ["Extra keyword arguments into a dict", "Extra positional arguments into a tuple", "Nothing", "Only strings"], answer: 1, explain: "*args gathers extra positional args as a tuple; **kwargs gathers keyword args as a dict." , tags: ["args-kwargs"] },
+            { q: "A variable assigned inside a function is by default…", options: ["Global", "Local to that function", "A constant", "Shared with the caller"], answer: 1, explain: "Assignment inside a function creates a local name (the L in LEGB)." , tags: ["scope"] },
+            { q: "What does the @ symbol above a function apply?", options: ["A comment", "A decorator", "A type hint", "A loop"], answer: 1, explain: "@name applies a decorator that wraps the function." , tags: ["decorators"] },
           ],
         },
       ],
@@ -1889,6 +1957,7 @@ print(Task("A") == Task("A"))`,
         },
         {
           id: "m06-l06", kind: "exercise", title: "Exercise: A Rectangle class",
+          tags: ["classes-oop"],
           content: `
 <div class="lc-eyebrow">Exercise · Object-Oriented Python</div>
 <h1>Model a rectangle</h1>
@@ -1921,6 +1990,7 @@ print(r.perimeter())   # 18`,
         },
         {
           id: "m06-l07", kind: "exercise", title: "Exercise: Vector addition",
+          tags: ["classes-oop", "dunder-methods"],
           content: `
 <div class="lc-eyebrow">Exercise · Object-Oriented Python</div>
 <h1>Add vectors with +</h1>
@@ -1946,6 +2016,7 @@ print(result.x, result.y)   # 4 6`,
         },
         {
           id: "m06-l08", kind: "exercise", title: "Exercise: A shopping cart",
+          tags: ["classes-oop"],
           docs: [
             { label: "Classes", url: "https://docs.python.org/3/tutorial/classes.html" },
             { label: "Lists (.append())", url: "https://docs.python.org/3/tutorial/datastructures.html#more-on-lists" },
@@ -1988,12 +2059,12 @@ print(cart.total(), cart.count())   # 6.5 2`,
           id: "m06-quiz", kind: "quiz", title: "Module 6 Check: OOP",
           intro: "Classes, instances, inheritance, and dunder methods.",
           questions: [
-            { q: "What runs automatically when you create an instance?", options: ["__new__ only", "__init__", "__main__", "__str__"], answer: 1, explain: "__init__ initialises a new instance." },
-            { q: "What is `self` in a method?", options: ["The class itself", "The current instance", "A global variable", "The parent class"], answer: 1, explain: "self refers to the specific instance the method was called on." },
-            { q: "What does a child class get from its parent?", options: ["Nothing", "Only attributes", "The parent's methods and attributes", "Only the name"], answer: 2, explain: "Inheritance gives the child the parent's behaviour, which it can extend or override." },
-            { q: "Which dunder method customises what print() shows?", options: ["__print__", "__show__", "__str__", "__repr_only__"], answer: 2, explain: "__str__ defines the human-readable string." },
-            { q: "What does @dataclass generate for you?", options: ["A database table", "__init__, __repr__, __eq__", "A web server", "Type checking"], answer: 1, explain: "It auto-writes the common boilerplate methods." },
-            { q: "How do you call the parent class's __init__?", options: ["parent()", "super().__init__()", "self.__init__()", "Animal.init()"], answer: 1, explain: "super().__init__(...) invokes the parent initialiser." },
+            { q: "What runs automatically when you create an instance?", options: ["__new__ only", "__init__", "__main__", "__str__"], answer: 1, explain: "__init__ initialises a new instance." , tags: ["classes-oop"] },
+            { q: "What is `self` in a method?", options: ["The class itself", "The current instance", "A global variable", "The parent class"], answer: 1, explain: "self refers to the specific instance the method was called on." , tags: ["classes-oop"] },
+            { q: "What does a child class get from its parent?", options: ["Nothing", "Only attributes", "The parent's methods and attributes", "Only the name"], answer: 2, explain: "Inheritance gives the child the parent's behaviour, which it can extend or override." , tags: ["inheritance"] },
+            { q: "Which dunder method customises what print() shows?", options: ["__print__", "__show__", "__str__", "__repr_only__"], answer: 2, explain: "__str__ defines the human-readable string." , tags: ["dunder-methods"] },
+            { q: "What does @dataclass generate for you?", options: ["A database table", "__init__, __repr__, __eq__", "A web server", "Type checking"], answer: 1, explain: "It auto-writes the common boilerplate methods." , tags: ["classes-oop"] },
+            { q: "How do you call the parent class's __init__?", options: ["parent()", "super().__init__()", "self.__init__()", "Animal.init()"], answer: 1, explain: "super().__init__(...) invokes the parent initialiser." , tags: ["inheritance"] },
           ],
         },
       ],
@@ -2159,6 +2230,7 @@ print(f"File name: {f.name}, exists: {f.exists()}")`,
         },
         {
           id: "m07-l05", kind: "exercise", title: "Exercise: Save & count lines",
+          tags: ["files-io"],
           content: `
 <div class="lc-eyebrow">Exercise · Files & Exceptions</div>
 <h1>Write a file, then read it</h1>
@@ -2184,6 +2256,7 @@ print(f"Lines: {line_count}")`,
         },
         {
           id: "m07-l06", kind: "exercise", title: "Exercise: Safe integer parsing",
+          tags: ["exceptions", "input-conversion"],
           content: `
 <div class="lc-eyebrow">Exercise · Files & Exceptions</div>
 <h1>Parse safely</h1>
@@ -2206,6 +2279,7 @@ print(to_int("hello"))   # -1`,
         },
         {
           id: "m07-l07", kind: "exercise", title: "Exercise: Scan a log file",
+          tags: ["files-io", "strings"],
           docs: [
             { label: "Reading & writing files", url: "https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files" },
             { label: "str methods (in / count)", url: "https://docs.python.org/3/library/stdtypes.html#string-methods" },
@@ -2243,12 +2317,12 @@ print("Errors:", error_count)`,
           id: "m07-quiz", kind: "quiz", title: "Module 7 Check: Files & Errors",
           intro: "Files, the with statement, and exception handling.",
           questions: [
-            { q: "Which mode opens a file for writing (replacing it)?", options: ["\"r\"", "\"w\"", "\"a\"", "\"x\""], answer: 1, explain: "\"w\" writes and truncates; \"a\" appends; \"r\" reads." },
-            { q: "Why use `with open(...) as f:`?", options: ["It's faster", "It closes the file automatically", "It reads faster", "It's required by Python"], answer: 1, explain: "The with block guarantees the file is closed even on errors." },
-            { q: "Where does risky code go?", options: ["In except", "In try", "In finally", "In else"], answer: 1, explain: "Put code that might fail in try; handle failures in except." },
-            { q: "What does `finally` do?", options: ["Runs only on error", "Runs only on success", "Always runs", "Never runs"], answer: 2, explain: "finally runs whether or not an exception occurred." },
-            { q: "How do you signal an error from your own code?", options: ["throw", "raise", "error()", "panic"], answer: 1, explain: "Python uses raise." },
-            { q: "What does Path('a') / 'b.txt' produce?", options: ["A division error", "The joined path a/b.txt", "The string 'a/b.txt' only on Windows", "None"], answer: 1, explain: "pathlib overloads / to join path parts cross-platform." },
+            { q: "Which mode opens a file for writing (replacing it)?", options: ["\"r\"", "\"w\"", "\"a\"", "\"x\""], answer: 1, explain: "\"w\" writes and truncates; \"a\" appends; \"r\" reads." , tags: ["files-io"] },
+            { q: "Why use `with open(...) as f:`?", options: ["It's faster", "It closes the file automatically", "It reads faster", "It's required by Python"], answer: 1, explain: "The with block guarantees the file is closed even on errors." , tags: ["files-io"] },
+            { q: "Where does risky code go?", options: ["In except", "In try", "In finally", "In else"], answer: 1, explain: "Put code that might fail in try; handle failures in except." , tags: ["exceptions"] },
+            { q: "What does `finally` do?", options: ["Runs only on error", "Runs only on success", "Always runs", "Never runs"], answer: 2, explain: "finally runs whether or not an exception occurred." , tags: ["exceptions"] },
+            { q: "How do you signal an error from your own code?", options: ["throw", "raise", "error()", "panic"], answer: 1, explain: "Python uses raise." , tags: ["exceptions"] },
+            { q: "What does Path('a') / 'b.txt' produce?", options: ["A division error", "The joined path a/b.txt", "The string 'a/b.txt' only on Windows", "None"], answer: 1, explain: "pathlib overloads / to join path parts cross-platform." , tags: ["files-io"] },
           ],
         },
       ],
@@ -2416,6 +2490,7 @@ print("Parsed total:", json.loads(as_text)["total"])`,
         },
         {
           id: "m08-l05", kind: "exercise", title: "Exercise: Word frequency with Counter",
+          tags: ["collections-module", "dicts"],
           content: `
 <div class="lc-eyebrow">Exercise · The Standard Library</div>
 <h1>Most common word</h1>
@@ -2443,6 +2518,7 @@ print("Top word:", top_word)`,
         },
         {
           id: "m08-l06", kind: "exercise", title: "Exercise: JSON round-trip",
+          tags: ["modules-imports"],
           content: `
 <div class="lc-eyebrow">Exercise · The Standard Library</div>
 <h1>Serialise and parse</h1>
@@ -2471,6 +2547,7 @@ print(restored["name"])`,
         },
         {
           id: "m08-l07", kind: "exercise", title: "Exercise: Shipping time",
+          tags: ["datetime"],
           docs: [
             { label: "datetime", url: "https://docs.python.org/3/library/datetime.html" },
             { label: "datetime.strptime", url: "https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime" },
@@ -2539,6 +2616,7 @@ print(dt.strftime("%A, %d %B %Y"))`,
         },
         {
           id: "m08-l09", kind: "exercise", title: "Exercise: Reformat a date",
+          tags: ["datetime"],
           docs: [{ label: "strftime codes", url: "https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior" }],
           content: `
 <div class="lc-eyebrow">Exercise · The Standard Library</div>
@@ -2566,6 +2644,7 @@ print(out)`,
         },
         {
           id: "m08-l10", kind: "exercise", title: "Exercise: Sample statistics",
+          tags: ["modules-imports", "numbers-math"],
           docs: [
             { label: "random.sample", url: "https://docs.python.org/3/library/random.html#random.sample" },
             { label: "statistics", url: "https://docs.python.org/3/library/statistics.html" },
@@ -2607,12 +2686,12 @@ print("mean:", avg, "median:", med)`,
           id: "m08-quiz", kind: "quiz", title: "Module 8 Check: Standard Library",
           intro: "math, random, datetime, collections, itertools, json.",
           questions: [
-            { q: "How do you use a module like math?", options: ["use math", "import math", "include math", "require math"], answer: 1, explain: "import brings a module into your program." },
-            { q: "What makes random produce repeatable results?", options: ["random.fixed()", "random.seed(n)", "random.lock()", "It can't be repeated"], answer: 1, explain: "Seeding the generator gives the same sequence each run." },
-            { q: "Subtracting two date objects gives…", options: ["an int of seconds", "a timedelta", "a string", "an error"], answer: 1, explain: "date - date is a timedelta; use .days for the day count." },
-            { q: "What does Counter(words).most_common(1) return?", options: ["The rarest item", "A list with the top (item, count) pair", "Just a number", "A dict"], answer: 1, explain: "It returns a list of the most common (item, count) tuples." },
-            { q: "json.dumps converts…", options: ["JSON text into a Python object", "a Python object into JSON text", "a file into JSON", "nothing"], answer: 1, explain: "dumps = object → string; loads = string → object." },
-            { q: "Which gives a running total of [1,2,3]?", options: ["sum([1,2,3])", "accumulate([1,2,3])", "product([1,2,3])", "max([1,2,3])"], answer: 1, explain: "itertools.accumulate yields running totals: 1, 3, 6." },
+            { q: "How do you use a module like math?", options: ["use math", "import math", "include math", "require math"], answer: 1, explain: "import brings a module into your program." , tags: ["modules-imports"] },
+            { q: "What makes random produce repeatable results?", options: ["random.fixed()", "random.seed(n)", "random.lock()", "It can't be repeated"], answer: 1, explain: "Seeding the generator gives the same sequence each run." , tags: ["modules-imports"] },
+            { q: "Subtracting two date objects gives…", options: ["an int of seconds", "a timedelta", "a string", "an error"], answer: 1, explain: "date - date is a timedelta; use .days for the day count." , tags: ["datetime"] },
+            { q: "What does Counter(words).most_common(1) return?", options: ["The rarest item", "A list with the top (item, count) pair", "Just a number", "A dict"], answer: 1, explain: "It returns a list of the most common (item, count) tuples." , tags: ["collections-module"] },
+            { q: "json.dumps converts…", options: ["JSON text into a Python object", "a Python object into JSON text", "a file into JSON", "nothing"], answer: 1, explain: "dumps = object → string; loads = string → object." , tags: ["modules-imports"] },
+            { q: "Which gives a running total of [1,2,3]?", options: ["sum([1,2,3])", "accumulate([1,2,3])", "product([1,2,3])", "max([1,2,3])"], answer: 1, explain: "itertools.accumulate yields running totals: 1, 3, 6." , tags: ["itertools"] },
           ],
         },
       ],
@@ -2739,6 +2818,7 @@ print("Sum of squares:", total)`,
         },
         {
           id: "m09-l04", kind: "exercise", title: "Exercise: Comprehension drills",
+          tags: ["comprehensions"],
           content: `
 <div class="lc-eyebrow">Exercise · Comprehensions & Generators</div>
 <h1>Build with comprehensions</h1>
@@ -2768,6 +2848,7 @@ print(length_map)`,
         },
         {
           id: "m09-l05", kind: "exercise", title: "Exercise: A countdown generator",
+          tags: ["generators-iterators"],
           content: `
 <div class="lc-eyebrow">Exercise · Comprehensions & Generators</div>
 <h1>Write a generator</h1>
@@ -2787,6 +2868,7 @@ print(list(countdown(5)))   # [5, 4, 3, 2, 1]`,
         },
         {
           id: "m09-l06", kind: "exercise", title: "Exercise: Discount the premium items",
+          tags: ["comprehensions"],
           docs: [
             { label: "List comprehensions", url: "https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions" },
             { label: "round()", url: "https://docs.python.org/3/library/functions.html#round" },
@@ -2812,12 +2894,12 @@ print(discounted)`,
           id: "m09-quiz", kind: "quiz", title: "Module 9 Check: Comprehensions & Generators",
           intro: "Comprehensions and lazy generators.",
           questions: [
-            { q: "What does [n*2 for n in range(3)] produce?", options: ["[0,1,2]", "[0,2,4]", "[2,4,6]", "[0,2,4,6]"], answer: 1, explain: "n is 0,1,2 → doubled gives 0,2,4." },
-            { q: "How do you filter inside a comprehension?", options: ["with else", "with an if clause", "with while", "you can't"], answer: 1, explain: "[x for x in seq if condition] keeps matching items." },
-            { q: "Which braces build a dictionary comprehension?", options: ["[k: v ...]", "(k, v ...)", "{k: v for ...}", "{k for ...}"], answer: 2, explain: "{key: value for ...} builds a dict; {x for ...} builds a set." },
-            { q: "What keyword makes a generator function?", options: ["return", "yield", "generate", "lazy"], answer: 1, explain: "yield produces values one at a time." },
-            { q: "Why prefer a generator over building a list?", options: ["It's always faster to write", "It produces items lazily, saving memory", "It sorts automatically", "It can't fail"], answer: 1, explain: "Generators compute values on demand instead of storing them all." },
-            { q: "What does next(gen) do?", options: ["Restarts the generator", "Gets the next yielded value", "Closes it", "Returns a list"], answer: 1, explain: "next() pulls the following value from a generator." },
+            { q: "What does [n*2 for n in range(3)] produce?", options: ["[0,1,2]", "[0,2,4]", "[2,4,6]", "[0,2,4,6]"], answer: 1, explain: "n is 0,1,2 → doubled gives 0,2,4." , tags: ["comprehensions"] },
+            { q: "How do you filter inside a comprehension?", options: ["with else", "with an if clause", "with while", "you can't"], answer: 1, explain: "[x for x in seq if condition] keeps matching items." , tags: ["comprehensions"] },
+            { q: "Which braces build a dictionary comprehension?", options: ["[k: v ...]", "(k, v ...)", "{k: v for ...}", "{k for ...}"], answer: 2, explain: "{key: value for ...} builds a dict; {x for ...} builds a set." , tags: ["comprehensions"] },
+            { q: "What keyword makes a generator function?", options: ["return", "yield", "generate", "lazy"], answer: 1, explain: "yield produces values one at a time." , tags: ["generators-iterators"] },
+            { q: "Why prefer a generator over building a list?", options: ["It's always faster to write", "It produces items lazily, saving memory", "It sorts automatically", "It can't fail"], answer: 1, explain: "Generators compute values on demand instead of storing them all." , tags: ["generators-iterators"] },
+            { q: "What does next(gen) do?", options: ["Restarts the generator", "Gets the next yielded value", "Closes it", "Returns a list"], answer: 1, explain: "next() pulls the following value from a generator." , tags: ["generators-iterators"] },
           ],
         },
       ],
@@ -2942,6 +3024,7 @@ print("is_even passes all tests")`,
         },
         {
           id: "m10-l04", kind: "exercise", title: "Exercise: A fully typed function",
+          tags: ["typing"],
           content: `
 <div class="lc-eyebrow">Exercise · Pro Toolkit</div>
 <h1>Annotate a function</h1>
@@ -2965,6 +3048,7 @@ print(shout("hello"))   # HELLO!`,
         },
         {
           id: "m10-l05", kind: "exercise", title: "Exercise: Write the tests",
+          tags: ["testing"],
           content: `
 <div class="lc-eyebrow">Exercise · Pro Toolkit</div>
 <h1>Test a function yourself</h1>
@@ -2986,6 +3070,7 @@ tests_written = 0   # set this to the number of asserts you wrote`,
         },
         {
           id: "m10-l06", kind: "exercise", title: "Exercise: A typed slugify",
+          tags: ["typing", "string-methods"],
           docs: [
             { label: "Type hints (typing)", url: "https://docs.python.org/3/library/typing.html" },
             { label: "str methods", url: "https://docs.python.org/3/library/stdtypes.html#string-methods" },
@@ -3017,12 +3102,12 @@ print(slugify("  My First Post "))`,
           id: "m10-quiz", kind: "quiz", title: "Module 10 Check: Pro Toolkit",
           intro: "Type hints, environments, pip, and testing.",
           questions: [
-            { q: "Are type hints enforced by Python at runtime?", options: ["Yes, always", "No — they're annotations for humans and tools", "Only for ints", "Only in functions"], answer: 1, explain: "Hints document types; tools like mypy check them, but Python doesn't enforce them." },
-            { q: "What is a virtual environment for?", options: ["Speeding up Python", "Isolating a project's packages", "Encrypting code", "Running tests"], answer: 1, explain: "It keeps each project's dependencies separate." },
-            { q: "Which command installs a package?", options: ["python install x", "pip install x", "venv add x", "import x"], answer: 1, explain: "pip is Python's package installer." },
-            { q: "What does `pip freeze > requirements.txt` do?", options: ["Deletes packages", "Records exact installed versions", "Upgrades pip", "Runs tests"], answer: 1, explain: "It captures the current versions so others can reproduce them." },
-            { q: "What does `assert x == 5` do when x is 3?", options: ["Prints 5", "Silently passes", "Raises an AssertionError", "Sets x to 5"], answer: 2, explain: "A failing assert raises AssertionError — that's how tests fail." },
-            { q: "In pytest, test functions are named…", options: ["check_*", "test_*", "assert_*", "it_*"], answer: 1, explain: "pytest discovers functions whose names start with test_." },
+            { q: "Are type hints enforced by Python at runtime?", options: ["Yes, always", "No — they're annotations for humans and tools", "Only for ints", "Only in functions"], answer: 1, explain: "Hints document types; tools like mypy check them, but Python doesn't enforce them." , tags: ["typing"] },
+            { q: "What is a virtual environment for?", options: ["Speeding up Python", "Isolating a project's packages", "Encrypting code", "Running tests"], answer: 1, explain: "It keeps each project's dependencies separate." , tags: ["modules-imports"] },
+            { q: "Which command installs a package?", options: ["python install x", "pip install x", "venv add x", "import x"], answer: 1, explain: "pip is Python's package installer." , tags: ["modules-imports"] },
+            { q: "What does `pip freeze > requirements.txt` do?", options: ["Deletes packages", "Records exact installed versions", "Upgrades pip", "Runs tests"], answer: 1, explain: "It captures the current versions so others can reproduce them." , tags: ["modules-imports"] },
+            { q: "What does `assert x == 5` do when x is 3?", options: ["Prints 5", "Silently passes", "Raises an AssertionError", "Sets x to 5"], answer: 2, explain: "A failing assert raises AssertionError — that's how tests fail." , tags: ["testing"] },
+            { q: "In pytest, test functions are named…", options: ["check_*", "test_*", "assert_*", "it_*"], answer: 1, explain: "pytest discovers functions whose names start with test_." , tags: ["testing"] },
           ],
         },
       ],
@@ -3071,6 +3156,7 @@ print("key=value".partition("="))`,
         },
         {
           id: "m11-l02", kind: "exercise", title: "Exercise: Reverse the full name",
+          tags: ["string-methods", "strings"],
           docs: [{ label: "str.split()", url: "https://docs.python.org/3/library/stdtypes.html#str.split" }],
           content: `
 <div class="lc-eyebrow">Section A · str mastery</div>
@@ -3095,6 +3181,7 @@ print(flipped)`,
         },
         {
           id: "m11-l03", kind: "exercise", title: "Exercise: Parse key=value lines",
+          tags: ["string-methods"],
           docs: [{ label: "str.partition()", url: "https://docs.python.org/3/library/stdtypes.html#str.partition" }],
           content: `
 <div class="lc-eyebrow">Section A · str mastery</div>
@@ -3121,6 +3208,7 @@ print(config)`,
         },
         {
           id: "m11-l04", kind: "exercise", title: "Exercise: Case-insensitive search",
+          tags: ["string-methods"],
           docs: [{ label: "str.casefold()", url: "https://docs.python.org/3/library/stdtypes.html#str.casefold" }],
           content: `
 <div class="lc-eyebrow">Section A · str mastery</div>
@@ -3151,11 +3239,11 @@ print(hits, first_at)`,
           id: "m11-quizA", kind: "quiz", title: "Section A Check: Strings",
           intro: "split, join, partition, find, and casefold.",
           questions: [
-            { q: "split() with no arguments splits on…", options: ["commas", "any run of whitespace", "newlines only", "every character"], answer: 1, explain: "Bare split() splits on whitespace and drops empty pieces." },
-            { q: "What does 'a,b,c'.split(',') return?", options: ["'a','b','c'", "['a', 'b', 'c']", "('a', 'b', 'c')", "'abc'"], answer: 1, explain: "split returns a list of strings." },
-            { q: "What does ' '.join(['a', 'b']) give?", options: ["['a', 'b']", "'a b'", "'ab'", "an error"], answer: 1, explain: "join glues items with the separator string." },
-            { q: "'Hello'.find('z') returns…", options: ["0", "-1", "a ValueError", "None"], answer: 1, explain: "find returns -1 on a miss (index() would raise)." },
-            { q: "Why casefold() before comparing text?", options: ["to sort it", "for case-insensitive matching", "to remove spaces", "to reverse it"], answer: 1, explain: "casefold normalises case so comparisons ignore it." },
+            { q: "split() with no arguments splits on…", options: ["commas", "any run of whitespace", "newlines only", "every character"], answer: 1, explain: "Bare split() splits on whitespace and drops empty pieces." , tags: ["string-methods"] },
+            { q: "What does 'a,b,c'.split(',') return?", options: ["'a','b','c'", "['a', 'b', 'c']", "('a', 'b', 'c')", "'abc'"], answer: 1, explain: "split returns a list of strings." , tags: ["string-methods"] },
+            { q: "What does ' '.join(['a', 'b']) give?", options: ["['a', 'b']", "'a b'", "'ab'", "an error"], answer: 1, explain: "join glues items with the separator string." , tags: ["string-methods"] },
+            { q: "'Hello'.find('z') returns…", options: ["0", "-1", "a ValueError", "None"], answer: 1, explain: "find returns -1 on a miss (index() would raise)." , tags: ["string-methods"] },
+            { q: "Why casefold() before comparing text?", options: ["to sort it", "for case-insensitive matching", "to remove spaces", "to reverse it"], answer: 1, explain: "casefold normalises case so comparisons ignore it." , tags: ["string-methods"] },
           ],
         },
 
@@ -3191,6 +3279,7 @@ print("after slice assign:", nums)`,
         },
         {
           id: "m11-l06", kind: "exercise", title: "Exercise: Run the edit script",
+          tags: ["lists"],
           docs: [{ label: "list.pop()", url: "https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types" }],
           content: `
 <div class="lc-eyebrow">Section B · list mastery</div>
@@ -3214,6 +3303,7 @@ print(data, popped)`,
         },
         {
           id: "m11-l07", kind: "exercise", title: "Exercise: Slice surgery",
+          tags: ["lists", "strings"],
           docs: [{ label: "Slicing", url: "https://docs.python.org/3/library/stdtypes.html#common-sequence-operations" }],
           content: `
 <div class="lc-eyebrow">Section B · list mastery</div>
@@ -3247,6 +3337,7 @@ print(nums, backup, reversed_nums, every_other)`,
         },
         {
           id: "m11-l08", kind: "exercise", title: "Exercise: Multi-key sort",
+          tags: ["sorting"],
           docs: [{ label: "sorted(key=...)", url: "https://docs.python.org/3/library/functions.html#sorted" }],
           content: `
 <div class="lc-eyebrow">Section B · list mastery</div>
@@ -3280,11 +3371,11 @@ for r in ordered:
           id: "m11-quizB", kind: "quiz", title: "Section B Check: Lists",
           intro: "Mutation, slicing, and sorting.",
           questions: [
-            { q: "nums.append([1, 2]) adds…", options: ["two items", "one list as a single item", "nothing", "an error"], answer: 1, explain: "append adds its argument as one element; extend adds each item." },
-            { q: "list.sort() returns…", options: ["a new sorted list", "None (it sorts in place)", "the first item", "a tuple"], answer: 1, explain: "sort mutates in place and returns None; use sorted() for a new list." },
-            { q: "x = [1, 2, 3]; x.pop() returns / leaves…", options: ["1 / [2, 3]", "3 / [1, 2]", "None / [1, 2]", "3 / [1, 2, 3]"], answer: 1, explain: "pop() removes and returns the last item." },
-            { q: "nums[::-1] produces…", options: ["a reversed copy", "the list sorted", "every other item", "an error"], answer: 0, explain: "A step of -1 returns a new, reversed list." },
-            { q: "Is Python's sort stable?", options: ["No", "Yes — equal items keep their order", "Only for numbers", "Only with key="], answer: 1, explain: "Stable sorting is what makes multi-key sorts work." },
+            { q: "nums.append([1, 2]) adds…", options: ["two items", "one list as a single item", "nothing", "an error"], answer: 1, explain: "append adds its argument as one element; extend adds each item." , tags: ["lists"] },
+            { q: "list.sort() returns…", options: ["a new sorted list", "None (it sorts in place)", "the first item", "a tuple"], answer: 1, explain: "sort mutates in place and returns None; use sorted() for a new list." , tags: ["lists", "sorting"] },
+            { q: "x = [1, 2, 3]; x.pop() returns / leaves…", options: ["1 / [2, 3]", "3 / [1, 2]", "None / [1, 2]", "3 / [1, 2, 3]"], answer: 1, explain: "pop() removes and returns the last item." , tags: ["lists"] },
+            { q: "nums[::-1] produces…", options: ["a reversed copy", "the list sorted", "every other item", "an error"], answer: 0, explain: "A step of -1 returns a new, reversed list." , tags: ["lists"] },
+            { q: "Is Python's sort stable?", options: ["No", "Yes — equal items keep their order", "Only for numbers", "Only with key="], answer: 1, explain: "Stable sorting is what makes multi-key sorts work." , tags: ["sorting"] },
           ],
         },
 
@@ -3317,6 +3408,7 @@ print({v: k for k, v in prices.items()})`,
         },
         {
           id: "m11-l10", kind: "exercise", title: "Exercise: Invert a mapping",
+          tags: ["dicts"],
           docs: [{ label: "dict.items()", url: "https://docs.python.org/3/library/stdtypes.html#dict.items" }],
           content: `
 <div class="lc-eyebrow">Section C · dict & set mastery</div>
@@ -3341,6 +3433,7 @@ print(inverted)`,
         },
         {
           id: "m11-l11", kind: "exercise", title: "Exercise: Group words by length",
+          tags: ["dicts"],
           docs: [{ label: "dict.setdefault()", url: "https://docs.python.org/3/library/stdtypes.html#dict.setdefault" }],
           content: `
 <div class="lc-eyebrow">Section C · dict & set mastery</div>
@@ -3396,6 +3489,7 @@ print("front only:", frontend - backend)`,
         },
         {
           id: "m11-l13", kind: "exercise", title: "Exercise: Common & exclusive",
+          tags: ["sets"],
           docs: [{ label: "Set operations", url: "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" }],
           content: `
 <div class="lc-eyebrow">Section C · dict & set mastery</div>
@@ -3422,11 +3516,11 @@ print(shared, exclusive)`,
           id: "m11-quizC", kind: "quiz", title: "Section C Check: Dicts & Sets",
           intro: "get, setdefault, merging, and set operations.",
           questions: [
-            { q: "d.get('x', 0) when 'x' is missing returns…", options: ["a KeyError", "0", "None", "'x'"], answer: 1, explain: "get returns the default instead of raising." },
-            { q: "setdefault(k, []) does what?", options: ["always overwrites k", "returns the existing value, or inserts the default then returns it", "deletes k", "raises if k exists"], answer: 1, explain: "It's get-or-create in one call — ideal for grouping." },
-            { q: "{'a': 1} | {'a': 2} gives…", options: ["{'a': 1}", "{'a': 2}", "{'a': [1, 2]}", "an error"], answer: 1, explain: "On a clash the right-hand dict wins." },
-            { q: "a & b on sets is the…", options: ["union", "intersection", "difference", "symmetric difference"], answer: 1, explain: "& is intersection (items in both)." },
-            { q: "a ^ b on sets is…", options: ["items in both", "items in exactly one", "all items", "no items"], answer: 1, explain: "^ is the symmetric difference." },
+            { q: "d.get('x', 0) when 'x' is missing returns…", options: ["a KeyError", "0", "None", "'x'"], answer: 1, explain: "get returns the default instead of raising." , tags: ["dicts"] },
+            { q: "setdefault(k, []) does what?", options: ["always overwrites k", "returns the existing value, or inserts the default then returns it", "deletes k", "raises if k exists"], answer: 1, explain: "It's get-or-create in one call — ideal for grouping." , tags: ["dicts"] },
+            { q: "{'a': 1} | {'a': 2} gives…", options: ["{'a': 1}", "{'a': 2}", "{'a': [1, 2]}", "an error"], answer: 1, explain: "On a clash the right-hand dict wins." , tags: ["dicts"] },
+            { q: "a & b on sets is the…", options: ["union", "intersection", "difference", "symmetric difference"], answer: 1, explain: "& is intersection (items in both)." , tags: ["sets"] },
+            { q: "a ^ b on sets is…", options: ["items in both", "items in exactly one", "all items", "no items"], answer: 1, explain: "^ is the symmetric difference." , tags: ["sets"] },
           ],
         },
 
@@ -3464,6 +3558,7 @@ print(dict(zip(fruits, [3, 5, 2])))`,
         },
         {
           id: "m11-l15", kind: "exercise", title: "Exercise: Numbered roster",
+          tags: ["loops"],
           docs: [{ label: "enumerate()", url: "https://docs.python.org/3/library/functions.html#enumerate" }],
           content: `
 <div class="lc-eyebrow">Section D · iteration toolkit</div>
@@ -3487,6 +3582,7 @@ for line in lines:
         },
         {
           id: "m11-l16", kind: "exercise", title: "Exercise: Merge columns",
+          tags: ["loops"],
           docs: [{ label: "itertools.zip_longest", url: "https://docs.python.org/3/library/itertools.html#itertools.zip_longest" }],
           content: `
 <div class="lc-eyebrow">Section D · iteration toolkit</div>
@@ -3547,6 +3643,7 @@ print("doubled:", list(map(lambda t: t * 2, temps)))`,
         },
         {
           id: "m11-l18", kind: "exercise", title: "Exercise: Word stats with key=",
+          tags: ["sorting", "dicts"],
           docs: [{ label: "max(key=...)", url: "https://docs.python.org/3/library/functions.html#max" }],
           content: `
 <div class="lc-eyebrow">Section D · iteration toolkit</div>
@@ -3572,6 +3669,7 @@ print(longest, shortest, all_alpha)`,
         },
         {
           id: "m11-l19", kind: "exercise", title: "Exercise: map/filter pipeline",
+          tags: ["lambda-hof"],
           docs: [{ label: "map() / filter()", url: "https://docs.python.org/3/library/functions.html#map" }],
           content: `
 <div class="lc-eyebrow">Section D · iteration toolkit</div>
@@ -3598,12 +3696,12 @@ print(result)`,
           id: "m11-quizD", kind: "quiz", title: "Section D Check: Iteration",
           intro: "enumerate, zip, key=, any/all, map/filter.",
           questions: [
-            { q: "enumerate(seq, start=1) gives the first index as…", options: ["0", "1", "len(seq)", "-1"], answer: 1, explain: "start sets the first index." },
-            { q: "zip stops when…", options: ["the longest input ends", "the shortest input ends", "never", "it reaches 10 items"], answer: 1, explain: "zip truncates to the shortest; zip_longest pads instead." },
-            { q: "sorted(words, key=len) sorts by…", options: ["the alphabet", "length", "reverse order", "random"], answer: 1, explain: "key transforms each item before comparing." },
-            { q: "all([]) returns…", options: ["True", "False", "None", "an error"], answer: 0, explain: "all() of an empty iterable is True (nothing fails)." },
-            { q: "any([0, '', None]) returns…", options: ["True", "False", "an error", "None"], answer: 1, explain: "All items are falsy, so any() is False." },
-            { q: "list(map(f, xs)) does what?", options: ["filters xs", "applies f to each item", "sorts xs", "sums xs"], answer: 1, explain: "map applies f to every element." },
+            { q: "enumerate(seq, start=1) gives the first index as…", options: ["0", "1", "len(seq)", "-1"], answer: 1, explain: "start sets the first index." , tags: ["loops"] },
+            { q: "zip stops when…", options: ["the longest input ends", "the shortest input ends", "never", "it reaches 10 items"], answer: 1, explain: "zip truncates to the shortest; zip_longest pads instead." , tags: ["loops"] },
+            { q: "sorted(words, key=len) sorts by…", options: ["the alphabet", "length", "reverse order", "random"], answer: 1, explain: "key transforms each item before comparing." , tags: ["sorting"] },
+            { q: "all([]) returns…", options: ["True", "False", "None", "an error"], answer: 0, explain: "all() of an empty iterable is True (nothing fails)." , tags: ["booleans-logic"] },
+            { q: "any([0, '', None]) returns…", options: ["True", "False", "an error", "None"], answer: 1, explain: "All items are falsy, so any() is False." , tags: ["booleans-logic"] },
+            { q: "list(map(f, xs)) does what?", options: ["filters xs", "applies f to each item", "sorts xs", "sums xs"], answer: 1, explain: "map applies f to every element." , tags: ["lambda-hof"] },
           ],
         },
 
@@ -3636,6 +3734,7 @@ print(list(islice(count(3, 3), 5)))`,
         },
         {
           id: "m11-l21", kind: "exercise", title: "Exercise: First N squares lazily",
+          tags: ["generators-iterators", "itertools"],
           docs: [{ label: "itertools.islice", url: "https://docs.python.org/3/library/itertools.html#itertools.islice" }],
           content: `
 <div class="lc-eyebrow">Section E · itertools</div>
@@ -3691,6 +3790,7 @@ print(list(combinations(["a", "b", "c"], 2)))`,
         },
         {
           id: "m11-l23", kind: "exercise", title: "Exercise: Pair everyone up",
+          tags: ["itertools"],
           docs: [{ label: "itertools.combinations", url: "https://docs.python.org/3/library/itertools.html#itertools.combinations" }],
           content: `
 <div class="lc-eyebrow">Section E · itertools</div>
@@ -3714,6 +3814,7 @@ print(pairs)`,
         },
         {
           id: "m11-l24", kind: "exercise", title: "Exercise: Running balance",
+          tags: ["itertools"],
           docs: [{ label: "itertools.accumulate", url: "https://docs.python.org/3/library/itertools.html#itertools.accumulate" }],
           content: `
 <div class="lc-eyebrow">Section E · itertools</div>
@@ -3738,6 +3839,7 @@ print(balances)`,
         },
         {
           id: "m11-l25", kind: "exercise", title: "Exercise: Group by first letter",
+          tags: ["itertools", "dicts"],
           docs: [{ label: "itertools.groupby", url: "https://docs.python.org/3/library/itertools.html#itertools.groupby" }],
           content: `
 <div class="lc-eyebrow">Section E · itertools</div>
@@ -3768,12 +3870,12 @@ print(grouped)`,
           id: "m11-quizE", kind: "quiz", title: "Section E Check: itertools",
           intro: "Infinite iterators, combinatorics, accumulate, groupby.",
           questions: [
-            { q: "Why wrap count(1) in islice?", options: ["to sort it", "it's infinite — you must bound it", "to reverse it", "to make a set"], answer: 1, explain: "count is infinite; islice caps how many you take." },
-            { q: "Order matters in…", options: ["combinations", "permutations", "both", "neither"], answer: 1, explain: "permutations counts AB and BA separately; combinations doesn't." },
-            { q: "accumulate([1, 2, 3]) yields…", options: ["[1, 2, 3]", "[1, 3, 6]", "[6]", "[1, 2, 3, 6]"], answer: 1, explain: "Running totals: 1, 1+2, 1+2+3." },
-            { q: "groupby requires its input to be…", options: ["a set", "sorted by the grouping key", "reversed", "a dict"], answer: 1, explain: "It only groups consecutive equal keys." },
-            { q: "chain([1, 2], [3, 4]) yields…", options: ["'1234'", "1, 2, 3, 4 in sequence", "[[1, 2], [3, 4]]", "an error"], answer: 1, explain: "chain flattens the iterables one after another." },
-            { q: "product([1, 2], [3, 4]) has how many items?", options: ["2", "4", "1", "8"], answer: 1, explain: "It's the Cartesian product: 2 × 2 = 4 pairs." },
+            { q: "Why wrap count(1) in islice?", options: ["to sort it", "it's infinite — you must bound it", "to reverse it", "to make a set"], answer: 1, explain: "count is infinite; islice caps how many you take." , tags: ["itertools"] },
+            { q: "Order matters in…", options: ["combinations", "permutations", "both", "neither"], answer: 1, explain: "permutations counts AB and BA separately; combinations doesn't." , tags: ["itertools"] },
+            { q: "accumulate([1, 2, 3]) yields…", options: ["[1, 2, 3]", "[1, 3, 6]", "[6]", "[1, 2, 3, 6]"], answer: 1, explain: "Running totals: 1, 1+2, 1+2+3." , tags: ["itertools"] },
+            { q: "groupby requires its input to be…", options: ["a set", "sorted by the grouping key", "reversed", "a dict"], answer: 1, explain: "It only groups consecutive equal keys." , tags: ["itertools"] },
+            { q: "chain([1, 2], [3, 4]) yields…", options: ["'1234'", "1, 2, 3, 4 in sequence", "[[1, 2], [3, 4]]", "an error"], answer: 1, explain: "chain flattens the iterables one after another." , tags: ["itertools"] },
+            { q: "product([1, 2], [3, 4]) has how many items?", options: ["2", "4", "1", "8"], answer: 1, explain: "It's the Cartesian product: 2 × 2 = 4 pairs." , tags: ["itertools"] },
           ],
         },
 
@@ -3809,6 +3911,7 @@ print(re.search(r"\\d+", text).group())  # '3'`,
         },
         {
           id: "m11-l27", kind: "exercise", title: "Exercise: Extract all numbers",
+          tags: ["regex"],
           docs: [{ label: "re.findall", url: "https://docs.python.org/3/library/re.html#re.findall" }],
           content: `
 <div class="lc-eyebrow">Section F · regular expressions</div>
@@ -3862,6 +3965,7 @@ print(re.sub(r"\\d", "#", "PIN 1234"))`,
         },
         {
           id: "m11-l29", kind: "exercise", title: "Exercise: Redact emails",
+          tags: ["regex"],
           docs: [{ label: "re.sub", url: "https://docs.python.org/3/library/re.html#re.sub" }],
           content: `
 <div class="lc-eyebrow">Section F · regular expressions</div>
@@ -3889,6 +3993,7 @@ print(clean)`,
         },
         {
           id: "m11-l30", kind: "exercise", title: "Exercise: Parse a log line",
+          tags: ["regex"],
           docs: [{ label: "Named groups", url: "https://docs.python.org/3/library/re.html#index-17" }],
           content: `
 <div class="lc-eyebrow">Section F · regular expressions</div>
@@ -3921,12 +4026,12 @@ print(level, "|", msg)`,
           id: "m11-quizF", kind: "quiz", title: "Section F Check: Regex",
           intro: "search vs match, findall, sub, named groups.",
           questions: [
-            { q: "re.match anchors the pattern at…", options: ["the end of the string", "the start of the string", "any position", "every newline"], answer: 1, explain: "match only succeeds at the start; search looks anywhere." },
-            { q: "re.findall(r\"\\d+\", s) returns…", options: ["a match object", "a list of strings", "the first integer", "None"], answer: 1, explain: "findall returns all matches as a list of strings." },
-            { q: "Why use raw strings r'...' for patterns?", options: ["they run faster", "backslashes aren't treated as escapes", "they're shorter", "Python requires it"], answer: 1, explain: "Raw strings stop Python from eating the backslashes before regex sees them." },
-            { q: "re.sub(pattern, repl, s) does what?", options: ["finds the first match", "replaces matches with repl", "splits s", "counts matches"], answer: 1, explain: "sub substitutes every match (unless count is given)." },
-            { q: "The named-group syntax is…", options: ["(name)", "(?P<name>...)", "[name]", "{name}"], answer: 1, explain: "(?P<name>...) names a capture group." },
-            { q: "m.group('level') returns…", options: ["all groups", "the named group's matched text", "the match length", "None always"], answer: 1, explain: "group(name) returns that group's captured text." },
+            { q: "re.match anchors the pattern at…", options: ["the end of the string", "the start of the string", "any position", "every newline"], answer: 1, explain: "match only succeeds at the start; search looks anywhere." , tags: ["regex"] },
+            { q: "re.findall(r\"\\d+\", s) returns…", options: ["a match object", "a list of strings", "the first integer", "None"], answer: 1, explain: "findall returns all matches as a list of strings." , tags: ["regex"] },
+            { q: "Why use raw strings r'...' for patterns?", options: ["they run faster", "backslashes aren't treated as escapes", "they're shorter", "Python requires it"], answer: 1, explain: "Raw strings stop Python from eating the backslashes before regex sees them." , tags: ["regex"] },
+            { q: "re.sub(pattern, repl, s) does what?", options: ["finds the first match", "replaces matches with repl", "splits s", "counts matches"], answer: 1, explain: "sub substitutes every match (unless count is given)." , tags: ["regex"] },
+            { q: "The named-group syntax is…", options: ["(name)", "(?P<name>...)", "[name]", "{name}"], answer: 1, explain: "(?P<name>...) names a capture group." , tags: ["regex"] },
+            { q: "m.group('level') returns…", options: ["all groups", "the named group's matched text", "the match length", "None always"], answer: 1, explain: "group(name) returns that group's captured text." , tags: ["regex"] },
           ],
         },
 
@@ -3960,6 +4065,7 @@ print("days in Q1:", (date(2024, 4, 1) - start).days)`,
         },
         {
           id: "m11-l32", kind: "exercise", title: "Exercise: Days until launch",
+          tags: ["datetime"],
           docs: [{ label: "datetime.strptime", url: "https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime" }],
           content: `
 <div class="lc-eyebrow">Section G · time, paths & math</div>
@@ -3988,6 +4094,7 @@ print(f"{days} days to launch")`,
         },
         {
           id: "m11-l33", kind: "exercise", title: "Exercise: Weekday name",
+          tags: ["datetime"],
           docs: [{ label: "strftime codes", url: "https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes" }],
           content: `
 <div class="lc-eyebrow">Section G · time, paths & math</div>
@@ -4041,6 +4148,7 @@ print("suffix:", p.suffix)`,
         },
         {
           id: "m11-l35", kind: "exercise", title: "Exercise: Dissect a path",
+          tags: ["files-io"],
           docs: [{ label: "PurePath", url: "https://docs.python.org/3/library/pathlib.html#pure-paths" }],
           content: `
 <div class="lc-eyebrow">Section G · time, paths & math</div>
@@ -4069,6 +4177,7 @@ print(name, stem, suffix)`,
         },
         {
           id: "m11-l36", kind: "exercise", title: "Exercise: List files by suffix",
+          tags: ["files-io"],
           docs: [{ label: "Path.glob", url: "https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob" }],
           content: `
 <div class="lc-eyebrow">Section G · time, paths & math</div>
@@ -4128,6 +4237,7 @@ print("median:", statistics.median([3, 1, 2, 4]))`,
         },
         {
           id: "m11-l38", kind: "exercise", title: "Exercise: Lottery draw (seeded)",
+          tags: ["modules-imports"],
           docs: [{ label: "random.sample", url: "https://docs.python.org/3/library/random.html#random.sample" }],
           content: `
 <div class="lc-eyebrow">Section G · time, paths & math</div>
@@ -4157,12 +4267,12 @@ print(draw)`,
           id: "m11-quizG", kind: "quiz", title: "Section G Check: Time, Paths & Math",
           intro: "datetime, pathlib, and seeded randomness.",
           questions: [
-            { q: "strptime is for…", options: ["formatting a datetime to text", "parsing text into a datetime", "time zones", "sleeping"], answer: 1, explain: "strptime parses; strftime formats." },
-            { q: "(date2 - date1) gives…", options: ["an int", "a timedelta", "a string", "seconds"], answer: 1, explain: "Subtracting dates yields a timedelta; read .days." },
-            { q: "PurePosixPath('a/b.txt').suffix is…", options: ["'b'", "'.txt'", "'txt'", "'b.txt'"], answer: 1, explain: "suffix includes the leading dot." },
-            { q: "PurePosixPath('a/b.txt').stem is…", options: ["'b'", "'b.txt'", "'.txt'", "'a'"], answer: 0, explain: "stem is the name without the suffix." },
-            { q: "Why call random.seed(n) before sampling?", options: ["it's faster", "it makes results reproducible", "it's more random", "Python requires it"], answer: 1, explain: "Seeding fixes the sequence so runs match." },
-            { q: "statistics.median([1, 2, 3, 4]) is…", options: ["2", "2.5", "3", "4"], answer: 1, explain: "With an even count it's the average of the two middle values." },
+            { q: "strptime is for…", options: ["formatting a datetime to text", "parsing text into a datetime", "time zones", "sleeping"], answer: 1, explain: "strptime parses; strftime formats." , tags: ["datetime"] },
+            { q: "(date2 - date1) gives…", options: ["an int", "a timedelta", "a string", "seconds"], answer: 1, explain: "Subtracting dates yields a timedelta; read .days." , tags: ["datetime"] },
+            { q: "PurePosixPath('a/b.txt').suffix is…", options: ["'b'", "'.txt'", "'txt'", "'b.txt'"], answer: 1, explain: "suffix includes the leading dot." , tags: ["files-io"] },
+            { q: "PurePosixPath('a/b.txt').stem is…", options: ["'b'", "'b.txt'", "'.txt'", "'a'"], answer: 0, explain: "stem is the name without the suffix." , tags: ["files-io"] },
+            { q: "Why call random.seed(n) before sampling?", options: ["it's faster", "it makes results reproducible", "it's more random", "Python requires it"], answer: 1, explain: "Seeding fixes the sequence so runs match." , tags: ["modules-imports"] },
+            { q: "statistics.median([1, 2, 3, 4]) is…", options: ["2", "2.5", "3", "4"], answer: 1, explain: "With an even count it's the average of the two middle values." , tags: ["modules-imports", "numbers-math"] },
           ],
         },
       ],

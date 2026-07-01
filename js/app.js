@@ -54,6 +54,48 @@
     return { prev: wrap(i > 0 ? siblings[i - 1] : null), next: wrap(i < siblings.length - 1 ? siblings[i + 1] : null) };
   }
 
+  /* ── concept-tag recommender (drives the Review page) ── */
+  const CONCEPTS = C.concepts || {};
+  const conceptLabel = (slug) => CONCEPTS[slug] || slug;
+  const hasTag = (item, slugs) => Array.isArray(item.tags) && item.tags.some((t) => slugs.includes(t));
+
+  // Exercises (core modules) carrying any currently-weak concept the learner
+  // hasn't completed yet — the "additional practice" suggestions.
+  function recommendedExercises() {
+    const weak = Store.weakTags();
+    if (!weak.length) return [];
+    return allLessons()
+      .filter((l) => l.kind === "exercise" && !Store.isDone(l.id) && hasTag(l, weak))
+      .slice(0, 6);
+  }
+
+  // A synthetic quiz drawn from questions across every module quiz that carry a
+  // weak concept, so a single micro-test drills exactly what the learner missed.
+  function buildMicroTest() {
+    const weak = Store.weakTags();
+    if (!weak.length) return null;
+    const pool = [];
+    allLessons().forEach((l) => {
+      if (l.kind !== "quiz" || !Array.isArray(l.questions)) return;
+      l.questions.forEach((q) => { if (hasTag(q, weak)) pool.push(q); });
+    });
+    if (pool.length < 3) return null;
+    // shuffle (Fisher–Yates) then take up to 8
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const questions = pool.slice(0, 8).map((q) => ({
+      q: q.q, options: q.options, answer: q.answer, explain: q.explain, tags: q.tags || [],
+    }));
+    return {
+      id: "review-microtest", kind: "quiz", synthetic: true,
+      title: "Concept micro-test",
+      intro: "A quick check drawn from the concepts you've been missing. Answer them right to strengthen those concepts.",
+      questions,
+    };
+  }
+
   /* ════════════════ VIEWS ════════════════ */
 
   function viewDashboard() {
@@ -261,6 +303,97 @@
       </div>`;
   }
 
+  function viewReview() {
+    const weak = Store.weakTags();
+    const recs = recommendedExercises();
+    const microTest = buildMicroTest();
+    const quizzes = Store.missedQuizIds().map((id) => findLesson(id)).filter(Boolean);
+    const exercises = Store.missedExerciseIds().map((id) => findLesson(id)).filter(Boolean);
+    const empty = !weak.length && !recs.length && !quizzes.length && !exercises.length;
+
+    view.innerHTML = `
+      <div class="topbar"><div class="crumb"><b>Review</b></div></div>
+      <section class="hero" style="margin-bottom:24px">
+        <div class="greeting">Spaced review</div>
+        <h1 style="font-size:28px">Strengthen what's shaky</h1>
+        <div class="subtitle">Every concept you slip on is remembered here — even after you fix it —
+          until you prove you've got it. Drill it with a micro-test or fresh practice.</div>
+        ${microTest ? `<div class="cta-row" style="margin-top:18px">
+          <button class="btn primary" id="microTestBtn"><i class="fas fa-bolt"></i> Take a concept micro-test</button>
+        </div>` : ""}
+      </section>
+      ${empty ? `
+        <div class="curriculum-module open"><div class="cm-lessons" style="text-align:center;padding:28px 14px;color:var(--muted)">
+          <i class="fas fa-trophy" style="font-size:22px;display:block;margin-bottom:8px;color:var(--accent)"></i>
+          You're all caught up — nothing to review.
+        </div></div>` : ""}
+      ${weak.length ? `
+        <div class="curriculum-module open">
+          <div class="cm-head" style="cursor:default">
+            <div class="cm-index"><i class="fas fa-brain"></i></div>
+            <div class="cm-meta"><h3>Concepts to strengthen</h3><p>Get these right a couple of times to graduate them.</p></div>
+          </div>
+          <div class="cm-lessons">
+            ${weak.map((slug) => {
+              const st = Store.tagStat(slug) || { misses: 0 };
+              return `<div class="lesson-row" style="cursor:default">
+                <div class="lr-check"><i class="fas fa-brain"></i></div>
+                <div class="lr-title">${esc(conceptLabel(slug))}</div>
+                <span class="fw-pill">${st.misses} miss${st.misses === 1 ? "" : "es"}</span>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>` : ""}
+      ${recs.length ? `
+        <div class="curriculum-module open">
+          <div class="cm-head" style="cursor:default">
+            <div class="cm-index"><i class="fas fa-dumbbell"></i></div>
+            <div class="cm-meta"><h3>Recommended practice</h3><p>Fresh exercises that drill your weak concepts.</p></div>
+          </div>
+          <div class="cm-lessons">
+            ${recs.map((l) => `
+              <div class="lesson-row" data-id="${l.id}">
+                <div class="lr-check"></div>
+                <div class="lr-title">${esc(l.title)}</div>
+                <span class="lr-kind exercise"><i class="fas fa-flask"></i> Exercise</span>
+              </div>`).join("")}
+          </div>
+        </div>` : ""}
+      ${(quizzes.length || exercises.length) ? `
+        <div class="curriculum-module open">
+          <div class="cm-head" style="cursor:default">
+            <div class="cm-index"><i class="fas fa-rotate-left"></i></div>
+            <div class="cm-meta"><h3>Pick up where you left off</h3><p>Items you're currently failing.</p></div>
+          </div>
+          <div class="cm-lessons">
+            ${quizzes.map((q) => `
+              <div class="lesson-row" data-quiz="${q.id}">
+                <div class="lr-check"></div>
+                <div class="lr-title">${esc(q.title)}</div>
+                <span class="fw-pill">${Store.quizMisses(q.id).length} missed</span>
+              </div>`).join("")}
+            ${exercises.map((l) => `
+              <div class="lesson-row" data-id="${l.id}">
+                <div class="lr-check"></div>
+                <div class="lr-title">${esc(l.title)}</div>
+                <span class="lr-kind exercise"><i class="fas fa-flask"></i> Exercise</span>
+              </div>`).join("")}
+          </div>
+        </div>` : ""}`;
+
+    const mtBtn = document.getElementById("microTestBtn");
+    if (mtBtn && microTest) mtBtn.addEventListener("click", () => viewQuiz(microTest));
+    view.querySelectorAll(".lesson-row[data-quiz]").forEach((row) => {
+      row.addEventListener("click", () => {
+        const quiz = findLesson(row.dataset.quiz);
+        if (quiz) viewQuiz(quiz, null, null, Store.quizMisses(quiz.id));
+      });
+    });
+    view.querySelectorAll(".lesson-row[data-id]").forEach((row) => {
+      row.addEventListener("click", () => { location.hash = "#/lesson/" + row.dataset.id; });
+    });
+  }
+
   function lessonCrumb(lesson) {
     if (lesson.project) {
       return `<span style="cursor:pointer" onclick="location.hash='#/projects'">Projects</span>
@@ -316,29 +449,36 @@
   }
 
   /* ════════════════ QUIZ (microtest) ════════════════ */
-  function viewQuiz(quiz, prev, next) {
-    const qs = quiz.questions || [];
-    const back = backLink(quiz);
+  function viewQuiz(quiz, prev, next, onlyIndices) {
+    const reviewMode = !!(onlyIndices || quiz.synthetic);
+    const allQs = (quiz.questions || []).map((q, i) => ({ ...q, _oi: i }));
+    const qs = onlyIndices ? allQs.filter((q) => onlyIndices.includes(q._oi)) : allQs;
+    const back = quiz.synthetic ? { href: "#/review", label: "Back to review" } : backLink(quiz);
+    const crumb = quiz.synthetic
+      ? `<span style="cursor:pointer" onclick="location.hash='#/review'">Review</span> &nbsp;/&nbsp; <b>Concept micro-test</b>`
+      : lessonCrumb(quiz);
+    const eyebrow = quiz.synthetic ? "Concept micro-test"
+      : onlyIndices ? "Reviewing missed questions" : "Knowledge check";
     view.innerHTML = `
-      <div class="topbar"><div class="crumb">${lessonCrumb(quiz)}</div></div>
+      <div class="topbar"><div class="crumb">${crumb}</div></div>
       <div class="quiz-wrap fade-in">
         <div class="quiz-head">
-          <div class="lc-eyebrow"><i class="fas fa-circle-question"></i> Knowledge check</div>
+          <div class="lc-eyebrow"><i class="fas fa-circle-question"></i> ${eyebrow}</div>
           <h1>${esc(quiz.title)}</h1>
           <p class="quiz-intro">${esc(quiz.intro || "")}</p>
         </div>
         <div id="quizQuestions">
-          ${qs.map((q, qi) => `
-            <div class="quiz-q" data-qi="${qi}">
-              <div class="quiz-q-text"><span class="quiz-q-num">${qi + 1}</span>${esc(q.q)}</div>
+          ${qs.map((q) => `
+            <div class="quiz-q" data-qi="${q._oi}">
+              <div class="quiz-q-text"><span class="quiz-q-num">${q._oi + 1}</span>${esc(q.q)}</div>
               <div class="quiz-options">
                 ${q.options.map((opt, oi) => `
-                  <label class="quiz-option" data-qi="${qi}" data-oi="${oi}">
+                  <label class="quiz-option" data-qi="${q._oi}" data-oi="${oi}">
                     <span class="quiz-radio"></span>
                     <span class="quiz-opt-text">${esc(opt)}</span>
                   </label>`).join("")}
               </div>
-              <div class="quiz-explain" data-qi="${qi}"></div>
+              <div class="quiz-explain" data-qi="${q._oi}"></div>
             </div>`).join("")}
         </div>
         <div class="quiz-foot">
@@ -346,8 +486,10 @@
           <div class="quiz-score" id="quizScore"></div>
         </div>
         <div class="lesson-nav" style="margin-top:24px">
-          ${prev ? `<a class="btn small" href="#/lesson/${prev.id}"><i class="fas fa-arrow-left"></i> Previous</a>` : "<span></span>"}
-          ${next ? `<a class="btn small primary" href="#/lesson/${next.id}">Next <i class="fas fa-arrow-right"></i></a>` : `<a class="btn small primary" href="${back.href}">${back.label}</a>`}
+          ${reviewMode
+            ? `<a class="btn small primary" href="#/review"><i class="fas fa-arrow-left"></i> Back to review</a>`
+            : `${prev ? `<a class="btn small" href="#/lesson/${prev.id}"><i class="fas fa-arrow-left"></i> Previous</a>` : "<span></span>"}
+               ${next ? `<a class="btn small primary" href="#/lesson/${next.id}">Next <i class="fas fa-arrow-right"></i></a>` : `<a class="btn small primary" href="${back.href}">${back.label}</a>`}`}
         </div>
       </div>`;
 
@@ -366,10 +508,15 @@
         toast("Answer every question first"); return;
       }
       let correct = 0;
-      qs.forEach((q, qi) => {
+      qs.forEach((q) => {
+        const qi = q._oi;
         const pick = chosen[qi];
         const ok = pick === q.answer;
         if (ok) correct++;
+        Store.recordTagResult(q.tags || [], ok);
+        if (!quiz.synthetic) {
+          if (ok) Store.clearQuizMiss(quiz.id, qi); else Store.recordQuizMiss(quiz.id, qi);
+        }
         view.querySelectorAll(`.quiz-option[data-qi="${qi}"]`).forEach((o) => {
           const oi = parseInt(o.dataset.oi, 10);
           o.classList.remove("selected");
@@ -389,9 +536,10 @@
         You scored ${correct}/${qs.length} (${pct}%). ${passed ? "Module check passed!" : "Score 80% to pass — review and retry."}`;
       const btn = document.getElementById("quizSubmit");
       btn.innerHTML = `<i class="fas fa-rotate-right"></i> Try again`;
-      btn.onclick = () => viewQuiz(quiz, prev, next);
+      btn.onclick = () => viewQuiz(quiz, prev, next, onlyIndices);
       Store.countRun();
-      if (passed) { Store.markDone(quiz.id); toast("Quiz passed! 🎉"); }
+      updateChrome();
+      if (!onlyIndices && !quiz.synthetic && passed) { Store.markDone(quiz.id); toast("Quiz passed! 🎉"); }
       scoreEl.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }
@@ -522,7 +670,11 @@
         const result = await Runner.check(cm.getValue(), lesson.tests, getStdin());
         Store.countRun();
         const all = renderChecks(result);
-        if (all) { Store.markDone(lesson.id); toast("Exercise complete! 🎉"); }
+        if (all) { Store.markDone(lesson.id); Store.clearExerciseMiss(lesson.id); toast("Exercise complete! 🎉"); }
+        else if ((result.tests || []).length) { Store.recordExerciseMiss(lesson.id); }
+        // Feed the graded outcome into the exercise's concept tags (retention).
+        if ((result.tests || []).length) Store.recordTagResult(lesson.tags || [], all);
+        updateChrome();
       } catch (e) {
         outEl.innerHTML = engineError();
       }
@@ -945,6 +1097,7 @@ for i in range(1, 6):
       case "#/playground": return viewPlayground();
       case "#/frameworks": return viewFrameworks();
       case "#/projects": return viewProjects();
+      case "#/review": return viewReview();
       case "#/users": return viewUsers();
       case "#/settings": return viewSettings();
       default: return viewDashboard();
@@ -966,6 +1119,14 @@ for i in range(1, 6):
     const u = window.Auth ? Auth.user() : null;
     const navUsers = document.getElementById("navUsers");
     if (navUsers) navUsers.style.display = u && Auth.isAdmin() ? "" : "none";
+    const reviewBadge = document.getElementById("reviewBadge");
+    if (reviewBadge) {
+      // Lead with weak-concept count; fall back to currently-outstanding items.
+      const n = Store.weakTags().length ||
+        (Store.missedQuizIds().length + Store.missedExerciseIds().length);
+      reviewBadge.textContent = n;
+      reviewBadge.style.display = n > 0 ? "" : "none";
+    }
     const acct = document.getElementById("sidebarAccount");
     if (acct) {
       acct.style.display = u ? "" : "none";
