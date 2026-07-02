@@ -15,12 +15,13 @@ powered by [Pyodide](https://pyodide.org) (CPython compiled to WebAssembly).
   runaway loop is stopped automatically after 12 seconds.
 - **Auto-checked exercises** — each exercise is graded by real Python assertions
   and tells you exactly which checks pass or fail.
-- **Step-by-step curriculum** — **11 core modules**, beginner to advanced, each
+- **Step-by-step curriculum** — **12 core modules**, beginner to advanced, each
   ending in a multiple-choice **knowledge-check quiz**:
   1. First Steps · 2. Numbers, Strings & Input · 3. Decisions & Loops ·
   4. Collections · 5. Functions & Scope · 6. Object-Oriented Python ·
   7. Files & Exceptions · 8. The Standard Library · 9. Comprehensions &
-  Generators · 10. Pro Toolkit · 11. Standard Library & Method Mastery
+  Generators · 10. Pro Toolkit · 11. Standard Library & Method Mastery ·
+  12. Modern Python (dataclasses, enums, pattern matching, typing)
 - **Review & retention** — every exercise and quiz question is tagged by
   **concept**, so a mistake is remembered on a dedicated **Review** page *even
   after you fix it*. Weak concepts stay flagged until you re-prove them, and the
@@ -146,7 +147,7 @@ only packages available in Pyodide (or the built-in `requests` / `fastapi` shims
 
 ## Status
 
-The full app and all content are in place: 11 core modules (with quizzes and 30+
+The full app and all content are in place: 12 core modules (with quizzes and 30+
 auto-checked exercises), 9 framework tracks, and 4 capstone projects — all running
 in-browser via Pyodide, plus a Review page for revisiting missed quiz questions and
 exercises. The **Django**, **Streamlit**, and **pytest** tracks are intentionally

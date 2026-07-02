@@ -57,6 +57,10 @@ window.CURRICULUM = {
     "itertools": "itertools",
     "sorting": "Sorting",
     "testing": "Testing & assertions",
+    "dataclasses": "Dataclasses",
+    "enums": "Enums",
+    "namedtuple": "namedtuple",
+    "pattern-matching": "Pattern matching",
   },
   modules: [
     /* ═══════════════ MODULE 01 ═══════════════ */
@@ -4273,6 +4277,490 @@ print(draw)`,
             { q: "PurePosixPath('a/b.txt').stem is…", options: ["'b'", "'b.txt'", "'.txt'", "'a'"], answer: 0, explain: "stem is the name without the suffix." , tags: ["files-io"] },
             { q: "Why call random.seed(n) before sampling?", options: ["it's faster", "it makes results reproducible", "it's more random", "Python requires it"], answer: 1, explain: "Seeding fixes the sequence so runs match." , tags: ["modules-imports"] },
             { q: "statistics.median([1, 2, 3, 4]) is…", options: ["2", "2.5", "3", "4"], answer: 1, explain: "With an even count it's the average of the two middle values." , tags: ["modules-imports", "numbers-math"] },
+          ],
+        },
+      ],
+    },
+
+    /* ═══════════════ MODULE 12 ═══════════════ */
+    {
+      id: "m12", num: "Module 12", title: "Modern Python",
+      icon: "fas fa-wand-magic-sparkles",
+      desc: "Dataclasses in depth, Enum, namedtuple, structural pattern matching, and richer type hints.",
+      lessons: [
+        {
+          id: "m12-l01", kind: "lesson", title: "Dataclasses, deeper",
+          docs: [{ label: "dataclasses", url: "https://docs.python.org/3/library/dataclasses.html" }],
+          content: `
+<div class="lc-eyebrow">Lesson 1 · Modern Python</div>
+<h1>Dataclasses beyond the basics</h1>
+<p>You met <code>@dataclass</code> back in the OOP module. Here are the features that
+make it a workhorse for real code.</p>
+
+<h2>Default factories for mutable fields</h2>
+<p>Never give a field a mutable default like <code>[]</code> directly — every instance
+would share one list. Use <code>field(default_factory=list)</code>:</p>
+<pre><code>from dataclasses import dataclass, field
+
+@dataclass
+class Cart:
+    items: list = field(default_factory=list)
+
+a, b = Cart(), Cart()
+a.items.append("apple")
+print(a.items, b.items)   # ['apple'] []  — independent</code></pre>
+
+<h2>__post_init__ for computed fields</h2>
+<p><code>__post_init__</code> runs right after the generated <code>__init__</code>, so
+you can derive extra attributes from the ones passed in:</p>
+<pre><code>@dataclass
+class Line:
+    qty: int
+    price: float
+    def __post_init__(self):
+        self.subtotal = self.qty * self.price</code></pre>
+
+<h2>Frozen &amp; ordered</h2>
+<p><code>@dataclass(frozen=True)</code> makes instances immutable (and hashable);
+<code>order=True</code> generates <code>&lt;</code>, <code>&gt;</code> and friends from
+the field order, so you can sort instances:</p>
+<pre><code>@dataclass(frozen=True, order=True)
+class Version:
+    major: int
+    minor: int
+
+print(sorted([Version(1, 2), Version(1, 0)]))</code></pre>
+
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+<code>asdict(obj)</code> and <code>astuple(obj)</code> (from <code>dataclasses</code>)
+turn an instance into a plain dict or tuple — handy for JSON or quick comparisons.</div></div>`,
+          starter: `from dataclasses import dataclass, field, asdict
+
+@dataclass(frozen=True, order=True)
+class Version:
+    major: int
+    minor: int
+
+for v in sorted([Version(2, 0), Version(1, 5), Version(1, 12)]):
+    print(v)
+
+print(asdict(Version(3, 1)))`,
+        },
+        {
+          id: "m12-l02", kind: "exercise", title: "Exercise: A cart item",
+          tags: ["dataclasses"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>Model a cart item</h1>
+<h3>Your task</h3>
+<p>Create a dataclass <code>CartItem</code> with these fields:</p>
+<ul>
+<li><code>name: str</code>, <code>qty: int</code>, <code>unit_price: float</code></li>
+<li><code>notes</code> — a list that <b>defaults to empty</b> via a default factory, so
+each item gets its own list</li>
+</ul>
+<p>In <code>__post_init__</code>, set <code>self.subtotal</code> to
+<code>qty * unit_price</code> rounded to 2 decimals.</p>`,
+          starter: `from dataclasses import dataclass, field
+
+@dataclass
+class CartItem:
+    # add your fields, then a __post_init__ that sets self.subtotal
+    ...
+`,
+          tests: [
+            { name: "subtotal is qty * unit_price", code: `assert CartItem("Widget", 3, 2.5).subtotal == 7.5, "subtotal should be qty*unit_price rounded to 2dp"` },
+            { name: "each item gets its own notes list", code: `a = CartItem("A", 1, 1.0); b = CartItem("B", 1, 1.0); a.notes.append("x"); assert b.notes == [], "use field(default_factory=list) so lists aren't shared"` },
+          ],
+        },
+        {
+          id: "m12-l03", kind: "lesson", title: "Enums",
+          docs: [{ label: "enum", url: "https://docs.python.org/3/library/enum.html" }],
+          content: `
+<div class="lc-eyebrow">Lesson 2 · Modern Python</div>
+<h1>Named constants with Enum</h1>
+<p>An <code>Enum</code> gives a fixed set of named values a proper type — clearer and
+safer than passing around bare strings or magic numbers.</p>
+<pre><code>from enum import Enum
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
+print(Color.RED)          # Color.RED
+print(Color.RED.name)     # 'RED'
+print(Color.RED.value)    # 1</code></pre>
+
+<h2>auto() and iteration</h2>
+<p>Let Python number members for you with <code>auto()</code>, and loop over a whole
+enum:</p>
+<pre><code>from enum import Enum, auto
+
+class Status(Enum):
+    PENDING = auto()
+    SHIPPED = auto()
+    DELIVERED = auto()
+
+for s in Status:
+    print(s.name, s.value)</code></pre>
+
+<h2>Identity comparison</h2>
+<p>Members are singletons, so compare with <code>is</code>:</p>
+<pre><code>s = Status.SHIPPED
+print(s is Status.SHIPPED)   # True</code></pre>
+
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Subclass <code>IntEnum</code> (or <code>StrEnum</code> in 3.11+) when you want members
+that also behave like plain <code>int</code>s or <code>str</code>s.</div></div>`,
+          starter: `from enum import Enum, auto
+
+class Priority(Enum):
+    LOW = auto()
+    MEDIUM = auto()
+    HIGH = auto()
+
+for p in Priority:
+    print(p.name, "=", p.value)
+
+print(Priority.HIGH is Priority.HIGH)`,
+        },
+        {
+          id: "m12-l04", kind: "exercise", title: "Exercise: Order status",
+          tags: ["enums"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>An order's lifecycle</h1>
+<h3>Your task</h3>
+<p>Define an enum <code>Status</code> with members <code>PENDING</code>,
+<code>SHIPPED</code>, <code>DELIVERED</code> (use <code>auto()</code>).</p>
+<p>Then write <code>next_status(s)</code> that returns the following status in that
+order. <code>DELIVERED</code> is the last stage, so it stays <code>DELIVERED</code>.</p>`,
+          starter: `from enum import Enum, auto
+
+class Status(Enum):
+    ...
+
+def next_status(s):
+    # return the next Status; DELIVERED stays DELIVERED
+    ...
+`,
+          tests: [
+            { name: "members are named", code: `assert Status.PENDING.name == "PENDING", "a member's .name is its identifier"` },
+            { name: "PENDING advances to SHIPPED", code: `assert next_status(Status.PENDING) is Status.SHIPPED` },
+            { name: "DELIVERED is the final status", code: `assert next_status(Status.DELIVERED) is Status.DELIVERED` },
+          ],
+        },
+        {
+          id: "m12-l05", kind: "lesson", title: "namedtuple & NamedTuple",
+          docs: [{ label: "collections.namedtuple", url: "https://docs.python.org/3/library/collections.html#collections.namedtuple" }],
+          content: `
+<div class="lc-eyebrow">Lesson 3 · Modern Python</div>
+<h1>Lightweight records with namedtuple</h1>
+<p>A <code>namedtuple</code> is a tuple whose positions also have names. It's immutable,
+tiny, and reads far better than <code>pt[0]</code>:</p>
+<pre><code>from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(1, 2)
+print(p.x, p.y)     # 1 2
+print(p[0])         # 1  — still a tuple
+x, y = p            # still unpacks</code></pre>
+
+<h2>Copy-with-changes: _replace</h2>
+<p>Because it's immutable, you make a modified copy instead of mutating:</p>
+<pre><code>moved = p._replace(y=9)
+print(p, moved)     # Point(x=1, y=2) Point(x=1, y=9)
+print(p._asdict())  # {'x': 1, 'y': 2}</code></pre>
+
+<h2>The class form: typing.NamedTuple</h2>
+<p>For type hints and defaults, the class syntax is clearer:</p>
+<pre><code>from typing import NamedTuple
+
+class Point(NamedTuple):
+    x: int
+    y: int = 0</code></pre>
+
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Reach for a <b>namedtuple</b> for small immutable value objects; reach for a
+<b>dataclass</b> when you want mutability, methods, or more behavior.</div></div>`,
+          starter: `from collections import namedtuple
+
+Color = namedtuple("Color", ["r", "g", "b"])
+c = Color(255, 100, 0)
+print(c, "->", c.r, c.g, c.b)
+
+lighter = c._replace(b=50)
+print(lighter)
+print(c._asdict())`,
+        },
+        {
+          id: "m12-l06", kind: "exercise", title: "Exercise: A Point record",
+          tags: ["namedtuple"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>Move a point without mutating it</h1>
+<h3>Your task</h3>
+<p>Create a namedtuple <code>Point</code> with fields <code>x</code> and
+<code>y</code>. Build <code>p = Point(1, 2)</code>, then make <code>moved</code> a copy
+of <code>p</code> with <code>y</code> set to <code>5</code> — without changing
+<code>p</code>.</p>`,
+          starter: `from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(1, 2)
+moved = ...   # a copy of p with y = 5
+`,
+          tests: [
+            { name: "fields are accessible by name", code: `assert (p.x, p.y) == (1, 2)` },
+            { name: "moved is a copy with y=5", code: `assert moved == Point(1, 5), "use p._replace(y=5)"` },
+            { name: "the original is unchanged", code: `assert p.y == 2, "namedtuples are immutable — p should be untouched"` },
+          ],
+        },
+        {
+          id: "m12-l07", kind: "lesson", title: "Pattern matching: the basics",
+          docs: [{ label: "match statements", url: "https://docs.python.org/3/tutorial/controlflow.html#match-statements" }],
+          content: `
+<div class="lc-eyebrow">Lesson 4 · Modern Python</div>
+<h1>match / case</h1>
+<p>Structural pattern matching (Python 3.10+) reads like a supercharged
+<code>if/elif</code>, but it can also <b>destructure</b> the value it matches.</p>
+<pre><code>def describe(x):
+    match x:
+        case 0:
+            return "zero"
+        case 1 | 2 | 3:
+            return "small"          # | is an OR-pattern
+        case _:
+            return "many"           # _ is the wildcard (default)</code></pre>
+
+<h2>Capture and guards</h2>
+<p>A bare name <b>captures</b> the value; add an <code>if</code> guard for extra
+conditions:</p>
+<pre><code>def sign(n):
+    match n:
+        case 0:
+            return "zero"
+        case v if v &gt; 0:
+            return "positive"
+        case _:
+            return "negative"</code></pre>
+
+<div class="callout"><i class="fas fa-triangle-exclamation"></i><div>
+<code>case _:</code> matches anything and is the catch-all. A lone name like
+<code>case v:</code> also matches anything (and captures it) — so put specific cases
+first.</div></div>`,
+          starter: `def describe(x):
+    match x:
+        case 0:
+            return "zero"
+        case 1 | 2 | 3:
+            return "small"
+        case v if v > 100:
+            return "huge"
+        case _:
+            return "many"
+
+for n in [0, 2, 50, 999]:
+    print(n, "->", describe(n))`,
+        },
+        {
+          id: "m12-l08", kind: "lesson", title: "Pattern matching: structural",
+          docs: [{ label: "Patterns", url: "https://docs.python.org/3/reference/compound_stmts.html#the-match-statement" }],
+          content: `
+<div class="lc-eyebrow">Lesson 5 · Modern Python</div>
+<h1>Matching shapes of data</h1>
+<p>The real power of <code>match</code> is matching the <i>structure</i> of lists,
+dicts, and objects — binding parts as you go.</p>
+
+<h2>Sequences</h2>
+<pre><code>match command:
+    case ["go", direction]:
+        move(direction)
+    case ["drop", *items]:       # *items captures the rest
+        drop(items)</code></pre>
+
+<h2>Mappings</h2>
+<pre><code>match event:
+    case {"type": "click", "x": x, "y": y}:
+        print(x, y)              # keys must be present</code></pre>
+
+<h2>Class patterns</h2>
+<p>You can match objects — including dataclasses — by type and pull out fields:</p>
+<pre><code>from dataclasses import dataclass
+
+@dataclass
+class Circle:
+    radius: float
+
+match shape:
+    case Circle(radius=r):
+        area = 3.14159 * r * r</code></pre>
+
+<div class="callout"><i class="fas fa-lightbulb"></i><div>
+Class patterns are why dataclasses and <code>match</code> pair so well — together they
+give you tidy, type-directed branching without a wall of <code>isinstance</code>
+checks.</div></div>`,
+          starter: `def handle(event):
+    match event:
+        case {"type": "click", "x": x, "y": y}:
+            return f"click at {x},{y}"
+        case {"type": "key", "value": v}:
+            return f"key {v}"
+        case _:
+            return "ignored"
+
+print(handle({"type": "click", "x": 3, "y": 4}))
+print(handle({"type": "key", "value": "Esc"}))
+print(handle({"type": "scroll"}))`,
+        },
+        {
+          id: "m12-l09", kind: "exercise", title: "Exercise: A tiny command parser",
+          tags: ["pattern-matching"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>Parse commands with match/case</h1>
+<h3>Your task</h3>
+<p>Write <code>run(cmd)</code> where <code>cmd</code> is a list. Use
+<code>match</code>/<code>case</code> to return:</p>
+<ul>
+<li><code>["move", x, y]</code> → <code>"moving to x,y"</code> (e.g. <code>"moving to 3,4"</code>)</li>
+<li><code>["stop"]</code> → <code>"stopping"</code></li>
+<li><code>["say", *words]</code> → <code>"say: "</code> followed by the words joined by spaces</li>
+<li>anything else → <code>"unknown"</code></li>
+</ul>`,
+          starter: `def run(cmd):
+    match cmd:
+        # add your cases here
+        ...
+`,
+          tests: [
+            { name: "move captures x and y", code: `assert run(["move", 3, 4]) == "moving to 3,4"` },
+            { name: "stop", code: `assert run(["stop"]) == "stopping"` },
+            { name: "say joins the rest", code: `assert run(["say", "hi", "there"]) == "say: hi there"` },
+            { name: "fallback is unknown", code: `assert run(["nope"]) == "unknown"` },
+          ],
+        },
+        {
+          id: "m12-l10", kind: "exercise", title: "Exercise: Shape area by pattern",
+          tags: ["pattern-matching", "dataclasses"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>Areas with class patterns</h1>
+<h3>Your task</h3>
+<p><code>Circle</code> and <code>Rectangle</code> dataclasses are provided. Write
+<code>area(shape)</code> that uses <code>match</code> with <b>class patterns</b> to
+return:</p>
+<ul>
+<li>a <code>Circle</code> → <code>math.pi * radius ** 2</code></li>
+<li>a <code>Rectangle</code> → <code>width * height</code></li>
+</ul>`,
+          starter: `from dataclasses import dataclass
+import math
+
+@dataclass
+class Circle:
+    radius: float
+
+@dataclass
+class Rectangle:
+    width: float
+    height: float
+
+def area(shape):
+    match shape:
+        # match Circle(...) and Rectangle(...)
+        ...
+`,
+          tests: [
+            { name: "circle area = pi r^2", code: `import math as _m
+assert abs(area(Circle(2)) - _m.pi * 4) < 1e-9` },
+            { name: "rectangle area = w*h", code: `assert area(Rectangle(3, 4)) == 12` },
+          ],
+        },
+        {
+          id: "m12-l11", kind: "lesson", title: "Richer type hints",
+          docs: [{ label: "typing", url: "https://docs.python.org/3/library/typing.html" }],
+          content: `
+<div class="lc-eyebrow">Lesson 6 · Modern Python</div>
+<h1>Type hints that document intent</h1>
+<p>Module 10 covered the basics. A few more tools make hints genuinely useful to
+readers and tools like mypy (Python still doesn't enforce them at runtime).</p>
+
+<h2>Unions and optionals</h2>
+<pre><code>def parse(x: str) -&gt; int | None:   # may return an int or None
+    return int(x) if x.isdigit() else None</code></pre>
+
+<h2>Literal — an exact set of values</h2>
+<pre><code>from typing import Literal
+
+def move(direction: Literal["left", "right"]) -&gt; None:
+    ...   # tools flag move("up") as wrong</code></pre>
+
+<h2>Aliases, Callable, TypedDict</h2>
+<pre><code>from typing import Callable, TypedDict
+
+Vector = list[float]                     # a type alias
+Reducer = Callable[[float, float], float]  # a function type
+
+class User(TypedDict):
+    name: str
+    age: int</code></pre>
+
+<div class="callout"><i class="fas fa-circle-info"></i><div>
+Hints are annotations, not checks — they live in <code>func.__annotations__</code> and
+help humans and linters. Use them where they clarify, not everywhere.</div></div>`,
+          starter: `from typing import Literal, Callable
+
+Reducer = Callable[[int, int], int]
+
+def combine(a: int, b: int, how: Literal["add", "mul"]) -> int:
+    return a + b if how == "add" else a * b
+
+print(combine(3, 4, "add"))
+print(combine(3, 4, "mul"))
+print(combine.__annotations__["how"])`,
+        },
+        {
+          id: "m12-l12", kind: "exercise", title: "Exercise: A typed event handler",
+          tags: ["typing"],
+          content: `
+<div class="lc-eyebrow">Exercise · Modern Python</div>
+<h1>Annotate a handler</h1>
+<h3>Your task</h3>
+<p>Write <code>handle(event, value)</code> and give it type hints:
+<code>event</code> is <code>Literal["click", "scroll"]</code>, <code>value</code> is an
+<code>int</code>, and it returns a <code>str</code>.</p>
+<ul>
+<li><code>"click"</code> → <code>"clicked at &lt;value&gt;"</code></li>
+<li><code>"scroll"</code> → <code>"scrolled by &lt;value&gt;"</code></li>
+</ul>
+<p>Keep the annotations — the checks read them back.</p>`,
+          starter: `from typing import Literal
+
+def handle(event, value):
+    # add hints: event: Literal["click","scroll"], value: int, -> str
+    ...
+`,
+          tests: [
+            { name: "click message", code: `assert handle("click", 10) == "clicked at 10"` },
+            { name: "scroll message", code: `assert handle("scroll", 5) == "scrolled by 5"` },
+            { name: "type hints are present", code: `assert "event" in handle.__annotations__ and handle.__annotations__.get("return") is str, "keep the annotations, including -> str"` },
+          ],
+        },
+        {
+          id: "m12-quiz", kind: "quiz", title: "Module 12 Check: Modern Python",
+          intro: "Dataclasses, enums, namedtuples, pattern matching, and typing. Score 80% or more to mark it complete.",
+          questions: [
+            { q: "What does @dataclass generate for you?", options: ["A database table", "__init__, __repr__ and __eq__", "Only __init__", "Nothing until you add fields"], answer: 1, explain: "It writes the boilerplate init, repr and eq from your annotated fields." , tags: ["dataclasses"] },
+            { q: "How do you give a dataclass field a mutable default like an empty list?", options: ["items: list = []", "items: list = field(default_factory=list)", "items = list()", "items: list = None"], answer: 1, explain: "A bare [] is shared across instances; default_factory builds a fresh list each time." , tags: ["dataclasses"] },
+            { q: "What does @dataclass(frozen=True) do?", options: ["Speeds it up", "Makes instances immutable", "Hides the fields", "Forbids inheritance"], answer: 1, explain: "Frozen instances can't be reassigned after creation (and become hashable)." , tags: ["dataclasses"] },
+            { q: "For a member Status.PENDING, what is .name?", options: ["its integer value", "the string 'PENDING'", "the class name", "None"], answer: 1, explain: ".name is the member's identifier; .value is the assigned value." , tags: ["enums"] },
+            { q: "What does enum.auto() do?", options: ["Picks random values", "Assigns increasing integer values automatically", "Makes the enum mutable", "Imports the enum"], answer: 1, explain: "auto() numbers members for you, starting at 1." , tags: ["enums"] },
+            { q: "p._replace(y=5) on a namedtuple…", options: ["mutates p in place", "returns a new namedtuple with y=5", "deletes y", "raises an error"], answer: 1, explain: "namedtuples are immutable, so _replace returns a modified copy." , tags: ["namedtuple"] },
+            { q: "In match/case, what does `case _:` match?", options: ["only None", "an underscore variable", "anything (the default)", "empty lists"], answer: 2, explain: "_ is the wildcard — the catch-all, so put it last." , tags: ["pattern-matching"] },
+            { q: "The pattern `case [a, b]:` matches…", options: ["any list", "a sequence of exactly two items", "a dict with keys a and b", "two separate values"], answer: 1, explain: "Sequence patterns match by length and bind each element." , tags: ["pattern-matching"] },
+            { q: "What does Literal[\"click\", \"scroll\"] express?", options: ["any string", "the value must be exactly 'click' or 'scroll'", "a list of two strings", "a regex"], answer: 1, explain: "Literal restricts a value to a specific set of constants (checked by tools, not at runtime)." , tags: ["typing"] },
           ],
         },
       ],
